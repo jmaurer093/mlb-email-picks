@@ -1,0 +1,76 @@
+name: MLB Value Picks
+
+on:
+  schedule:
+    - cron: '0 17 * * *'
+    - cron: '0 20 * * *'
+    - cron: '0 23 * * *'
+    - cron: '0 14 * * *'
+  workflow_dispatch:
+    inputs:
+      run_type:
+        description: 'Which email to send'
+        required: true
+        default: 'picks'
+        type: choice
+        options:
+          - picks
+          - summary
+
+jobs:
+  send-picks:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Determine run type
+        id: run_type
+        run: |
+          HOUR=$(date -u +%H)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "type=${{ github.event.inputs.run_type }}" >> $GITHUB_OUTPUT
+          elif [ "$HOUR" = "14" ]; then
+            echo "type=summary" >> $GITHUB_OUTPUT
+          else
+            echo "type=picks" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send picks email
+        if: steps.run_type.outputs.type == 'picks'
+        run: node scripts/daily-picks.js
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+
+      - name: Send morning summary
+        if: steps.run_type.outputs.type == 'summary'
+        run: node scripts/morning-summary.js
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+
+      - name: Commit updated data
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "MLB Picks Bot"
+          git add data/
+          git diff --staged --quiet || git commit -m "Update picks data $(date -u +%Y-%m-%d)"
+          git push
