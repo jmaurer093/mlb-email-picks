@@ -98,4 +98,118 @@ Return ONLY a valid JSON array, no markdown, no explanation:
   "home_team": "full team name",
   "away_team": "full team name",
   "commence_time": "e.g. 1:05 PM ET",
-  "pick": "team name to
+  "pick": "team name to bet",
+  "pick_odds": number,
+  "our_probability": number,
+  "implied_probability": number,
+  "ev_percentage": number,
+  "confidence_score": number,
+  "kelly_fraction": number,
+  "reasoning": "2-3 sentences on pitcher matchup, team form, and line value"
+}]
+
+kelly=max(0,min(25,(p*d-1)/(d-1)*100)), ev=(p*d-1)*100, d=odds>0?odds/100+1:100/|odds|+1
+Be realistic. confidence>65 only when genuine edge. JSON only.`;
+
+  const result = await httpsPost('api.anthropic.com', '/v1/messages',
+    { 'Content-Type': 'application/json', 'x-api-key': anthropicKey, 'anthropic-version': '2023-06-01' },
+    { model: 'claude-sonnet-4-20250514', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }
+  );
+
+  const raw = result.content?.map(b => b.text || '').join('') || '';
+  const clean = raw.replace(/```json|```/g, '').trim();
+  try { return JSON.parse(clean); }
+  catch(e) {
+    const m = raw.match(/\[[\s\S]*\]/);
+    if (m) return JSON.parse(m[0]);
+    throw new Error('Could not parse Claude response');
+  }
+}
+
+async function sendEmail(to, from, appPassword, subject, htmlBody) {
+  const nodemailer = require('nodemailer');
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user: from, pass: appPassword }
+  });
+  await transporter.sendMail({ from, to, subject, html: htmlBody });
+  console.log('Email sent to', to);
+}
+
+function buildPicksEmail(games, timeLabel, bankroll = 1000) {
+  const sorted = [...games].sort((a, b) => b.ev_percentage - a.ev_percentage);
+  const best = sorted[0];
+  const posEV = sorted.filter(g => g.ev_percentage > 0).length;
+  const evColor = (ev) => ev > 5 ? '#16a34a' : ev > 0 ? '#65a30d' : ev > -5 ? '#ca8a04' : '#dc2626';
+  const confColor = (s) => s >= 70 ? '#16a34a' : s >= 55 ? '#ca8a04' : '#dc2626';
+  const confBar = (s) => {
+    const color = confColor(s);
+    return `<div style="background:#e5e7eb;border-radius:4px;height:6px;width:160px;display:inline-block;vertical-align:middle"><div style="background:${color};height:6px;border-radius:4px;width:${s}%"></div></div> <span style="color:${color};font-weight:600">${s}%</span>`;
+  };
+  const gameRows = sorted.map((g, i) => {
+    const ec = evColor(g.ev_percentage);
+    const bet = ((g.kelly_fraction / 100) * bankroll).toFixed(0);
+    const evSign = g.ev_percentage > 0 ? '+' : '';
+    const isBest = i === 0;
+    return `<div style="background:${isBest ? '#f0fdf4' : '#ffffff'};border:1px solid ${isBest ? '#86efac' : '#e5e7eb'};border-radius:10px;padding:16px 20px;margin-bottom:12px">
+      ${isBest ? '<div style="background:#16a34a;color:#fff;font-size:11px;font-weight:600;padding:2px 10px;border-radius:4px;display:inline-block;margin-bottom:8px">⚡ BEST VALUE</div>' : ''}
+      <div style="font-size:15px;font-weight:600;color:#111827">${g.away_team} @ ${g.home_team}</div>
+      <div style="font-size:12px;color:#6b7280;margin-bottom:10px">${g.commence_time || ''}</div>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:10px">
+        <div><div style="font-size:10px;color:#9ca3af;text-transform:uppercase">Pick</div><div style="font-size:14px;font-weight:600;color:${ec}">${g.pick} ${fmtOdds(g.pick_odds)}</div></div>
+        <div><div style="font-size:10px;color:#9ca3af;text-transform:uppercase">Kelly Bet</div><div style="font-size:14px;font-weight:600">$${bet} (${g.kelly_fraction.toFixed(1)}%)</div></div>
+        <div><div style="font-size:10px;color:#9ca3af;text-transform:uppercase">EV</div><div style="font-size:14px;font-weight:600;color:${ec}">${evSign}${g.ev_percentage.toFixed(1)}%</div></div>
+        <div><div style="font-size:10px;color:#9ca3af;text-transform:uppercase">Confidence</div><div style="margin-top:4px">${confBar(g.confidence_score)}</div></div>
+      </div>
+      <div style="background:#f9fafb;border-radius:6px;padding:10px 12px;border-left:3px solid #16a34a;font-size:13px;color:#6b7280">${g.reasoning}</div>
+    </div>`;
+  }).join('');
+
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
+  return `<!DOCTYPE html><html><body style="font-family:-apple-system,sans-serif;background:#f3f4f6;margin:0;padding:20px"><div style="max-width:620px;margin:0 auto">
+  <div style="background:linear-gradient(135deg,#14532d,#16a34a);border-radius:12px;padding:24px;margin-bottom:20px;text-align:center">
+    <div style="font-size:28px">⚾</div>
+    <div style="color:#fff;font-size:20px;font-weight:700">MLB Value Picks</div>
+    <div style="color:#bbf7d0;font-size:13px;margin-top:4px">${timeLabel} · ${today}</div>
+  </div>
+  <div style="display:flex;gap:10px;margin-bottom:20px">
+    <div style="flex:1;background:#fff;border-radius:10px;padding:14px;text-align:center;border:1px solid #e5e7eb"><div style="font-size:22px;font-weight:700;color:#16a34a">${sorted.length}</div><div style="font-size:11px;color:#9ca3af;text-transform:uppercase">Games</div></div>
+    <div style="flex:1;background:#fff;border-radius:10px;padding:14px;text-align:center;border:1px solid #e5e7eb"><div style="font-size:22px;font-weight:700;color:#16a34a">${posEV}</div><div style="font-size:11px;color:#9ca3af;text-transform:uppercase">Pos EV</div></div>
+    <div style="flex:1;background:#fff;border-radius:10px;padding:14px;text-align:center;border:1px solid #e5e7eb"><div style="font-size:22px;font-weight:700;color:#16a34a">${best ? (best.ev_percentage>0?'+':'')+best.ev_percentage.toFixed(1)+'%' : '—'}</div><div style="font-size:11px;color:#9ca3af;text-transform:uppercase">Best EV</div></div>
+    <div style="flex:1;background:#fff;border-radius:10px;padding:14px;text-align:center;border:1px solid #e5e7eb"><div style="font-size:22px;font-weight:700;color:#16a34a">${best ? '$'+((best.kelly_fraction/100)*bankroll).toFixed(0) : '—'}</div><div style="font-size:11px;color:#9ca3af;text-transform:uppercase">Top Bet</div></div>
+  </div>
+  ${gameRows}
+  <div style="text-align:center;color:#9ca3af;font-size:11px;padding:12px">Kelly capped at 25% · Odds estimated by AI · Bet responsibly</div>
+</div></body></html>`;
+}
+
+function savePicks(games, dataDir) {
+  const date = todayStr();
+  const file = path.join(dataDir, `picks-${date}.json`);
+  const existing = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : { date, games: [], sent_at: [] };
+  existing.games = games;
+  existing.sent_at = [...(existing.sent_at || []), new Date().toISOString()];
+  fs.writeFileSync(file, JSON.stringify(existing, null, 2));
+  console.log('Saved picks to', file);
+}
+
+async function main() {
+  const { ANTHROPIC_API_KEY, GMAIL_USER, GMAIL_APP_PASSWORD, EMAIL_TO } = process.env;
+  if (!ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY not set');
+  if (!GMAIL_USER || !GMAIL_APP_PASSWORD) throw new Error('Gmail credentials not set');
+  if (!EMAIL_TO) throw new Error('EMAIL_TO not set');
+  const dataDir = ensureDataDir();
+  const timeLabel = getTimeLabel();
+  console.log(`Running ${timeLabel} picks email...`);
+  const espnEvents = await fetchESPN();
+  console.log(`ESPN: ${espnEvents.length} games found`);
+  const games = await getAnalysis(espnEvents, ANTHROPIC_API_KEY);
+  console.log(`Analysis complete: ${games.length} games`);
+  savePicks(games, dataDir);
+  const html = buildPicksEmail(games, timeLabel);
+  const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' });
+  await sendEmail(EMAIL_TO, GMAIL_USER, GMAIL_APP_PASSWORD, `⚾ MLB Picks — ${timeLabel} · ${date}`, html);
+  console.log('Done!');
+}
+
+main().catch(err => { console.error('Error:', err.message); process.exit(1); });
