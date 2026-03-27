@@ -117,8 +117,7 @@ Be realistic. confidence>65 only when genuine edge. JSON only.`;
   );
 
   const raw = result.content?.map(b => b.text || '').join('') || '';
-  const clean = raw.replace(/```json|```/g, '').trim();
-  try { return JSON.parse(clean); }
+const clean = raw.replace(/```json|```/g, '').replace(/:\s*\+(\d)/g, ': $1').trim();  try { return JSON.parse(clean); }
   catch(e) {
     const m = raw.match(/\[[\s\S]*\]/);
     if (m) return JSON.parse(m[0]);
