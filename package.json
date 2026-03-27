@@ -1,0 +1,253 @@
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+
+function httpsGet(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try { resolve(JSON.parse(data)); }
+        catch(e) { reject(new Error('JSON parse failed: ' + data.slice(0, 200))); }
+      });
+    }).on('error', reject);
+  });
+}
+
+function httpsPost(hostname, path, headers, body) {
+  return new Promise((resolve, reject) => {
+    const data = JSON.stringify(body);
+    const options = { hostname, path, method: 'POST', headers: { ...headers, 'Content-Length': Buffer.byteLength(data) } };
+    const req = https.request(options, (res) => {
+      let d = '';
+      res.on('data', chunk => d += chunk);
+      res.on('end', () => {
+        try { resolve(JSON.parse(d)); }
+        catch(e) { reject(new Error('JSON parse failed: ' + d.slice(0, 200))); }
+      });
+    });
+    req.on('error', reject);
+    req.write(data);
+    req.end();
+  });
+}
+
+function fmtOdds(o) { return o > 0 ? `+${o}` : `${o}`; }
+function dec(o) { return o > 0 ? o/100+1 : 100/Math.abs(o)+1; }
+
+function getTimeLabel() {
+  const hour = new Date().getUTCHours();
+  if (hour >= 14 && hour < 17) return 'Noon';
+  if (hour >= 17 && hour < 20) return '3 PM';
+  return '6 PM';
+}
+
+function todayStr() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function ensureDataDir() {
+  const dir = path.join(__dirname, '..', 'data');
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  return dir;
+}
+
+async function fetchESPN() {
+  const today = new Date();
+  const ymd = today.getUTCFullYear() +
+    String(today.getUTCMonth()+1).padStart(2,'0') +
+    String(today.getUTCDate()).padStart(2,'0');
+  try {
+    const data = await httpsGet(`https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates=${ymd}`);
+    return (data.events || []).map(e => ({
+      name: e.name,
+      date: e.date,
+      status: e.status?.type?.description,
+      competitors: e.competitions?.[0]?.competitors?.map(c => ({
+        team: c.team?.displayName,
+        abbr: c.team?.abbreviation,
+        homeAway: c.homeAway,
+        record: c.records?.[0]?.summary,
+        pitcher: c.probables?.[0]?.displayName,
+      }))
+    }));
+  } catch(e) {
+    console.log('ESPN fetch failed:', e.message);
+    return [];
+  }
+}
+
+async function getAnalysis(espnEvents, anthropicKey) {
+  const todayLabel = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/New_York'
+  });
+
+  const espnSection = espnEvents.length
+    ? `ESPN data (${espnEvents.length} games):\n${JSON.stringify(espnEvents, null, 2)}`
+    : `No ESPN data available. Today is ${todayLabel}. Use your knowledge of today's full MLB schedule.`;
+
+  const prompt = `You are an expert MLB betting analyst. Today is ${todayLabel}.
+
+${espnSection}
+
+Use your knowledge of current MLB team performance, starting pitchers, recent form, and typical Vegas lines to estimate realistic odds and analyze every game on today's slate for +EV betting opportunities.
+
+Return ONLY a valid JSON array, no markdown, no explanation:
+[{
+  "home_team": "full team name",
+  "away_team": "full team name",
+  "commence_time": "e.g. 1:05 PM ET",
+  "pick": "team name to bet",
+  "pick_odds": number,
+  "our_probability": number,
+  "implied_probability": number,
+  "ev_percentage": number,
+  "confidence_score": number,
+  "kelly_fraction": number,
+  "reasoning": "2-3 sentences on pitcher matchup, team form, and line value"
+}]
+
+kelly=max(0,min(25,(p*d-1)/(d-1)*100)), ev=(p*d-1)*100, d=odds>0?odds/100+1:100/|odds|+1
+Be realistic — most games are near coin flips. confidence>65 only when genuine edge. JSON only.`;
+
+  const result = await httpsPost('api.anthropic.com', '/v1/messages',
+    { 'Content-Type': 'application/json', 'x-api-key': anthropicKey, 'anthropic-version': '2023-06-01' },
+    { model: 'claude-sonnet-4-20250514', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }
+  );
+
+  const raw = result.content?.map(b => b.text || '').join('') || '';
+  const clean = raw.replace(/```json|```/g, '').trim();
+  try { return JSON.parse(clean); }
+  catch(e) {
+    const m = raw.match(/\[[\s\S]*\]/);
+    if (m) return JSON.parse(m[0]);
+    throw new Error('Could not parse Claude response');
+  }
+}
+
+async function sendEmail(to, from, appPassword, subject, htmlBody) {
+  const nodemailer = require('nodemailer');
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user: from, pass: appPassword }
+  });
+  await transporter.sendMail({ from, to, subject, html: htmlBody });
+  console.log('Email sent to', to);
+}
+
+function buildPicksEmail(games, timeLabel, bankroll = 1000) {
+  const sorted = [...games].sort((a, b) => b.ev_percentage - a.ev_percentage);
+  const best = sorted[0];
+  const posEV = sorted.filter(g => g.ev_percentage > 0).length;
+
+  const evColor = (ev) => ev > 5 ? '#16a34a' : ev > 0 ? '#65a30d' : ev > -5 ? '#ca8a04' : '#dc2626';
+  const confColor = (s) => s >= 70 ? '#16a34a' : s >= 55 ? '#ca8a04' : '#dc2626';
+  const confBar = (s) => {
+    const color = confColor(s);
+    return `<div style="background:#e5e7eb;border-radius:4px;height:6px;width:160px;display:inline-block;vertical-align:middle">
+      <div style="background:${color};height:6px;border-radius:4px;width:${s}%"></div>
+    </div> <span style="color:${color};font-weight:600">${s}%</span>`;
+  };
+
+  const gameRows = sorted.map((g, i) => {
+    const ec = evColor(g.ev_percentage);
+    const bet = ((g.kelly_fraction / 100) * bankroll).toFixed(0);
+    const evSign = g.ev_percentage > 0 ? '+' : '';
+    const isBest = i === 0;
+    return `
+    <div style="background:${isBest ? '#f0fdf4' : '#ffffff'};border:1px solid ${isBest ? '#86efac' : '#e5e7eb'};border-radius:10px;padding:16px 20px;margin-bottom:12px">
+      ${isBest ? '<div style="background:#16a34a;color:#fff;font-size:11px;font-weight:600;padding:2px 10px;border-radius:4px;display:inline-block;margin-bottom:8px;letter-spacing:0.5px">⚡ BEST VALUE</div>' : ''}
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-size:15px;font-weight:600;color:#111827">${g.away_team} <span style="color:#9ca3af;font-weight:400">@</span> ${g.home_team}</div>
+          <div style="font-size:12px;color:#6b7280;margin-top:2px">${g.commence_time || ''}</div>
+        </div>
+        <span style="background:${ec}18;border:1px solid ${ec}55;color:${ec};border-radius:4px;padding:2px 8px;font-size:12px;font-weight:600">${evSign}${g.ev_percentage.toFixed(1)}% EV</span>
+      </div>
+      <div style="display:flex;gap:24px;margin-top:12px;flex-wrap:wrap">
+        <div><div style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px">Pick</div><div style="font-size:14px;font-weight:600;color:${ec}">${g.pick}</div><div style="font-size:12px;color:#6b7280">${fmtOdds(g.pick_odds)}</div></div>
+        <div><div style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px">Kelly Bet</div><div style="font-size:14px;font-weight:600;color:#111827">$${bet}</div><div style="font-size:12px;color:#6b7280">${g.kelly_fraction.toFixed(1)}% of bankroll</div></div>
+        <div><div style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px">Edge</div><div style="font-size:14px;font-weight:600;color:#111827">${(g.our_probability * 100).toFixed(1)}% vs ${(g.implied_probability * 100).toFixed(1)}%</div><div style="font-size:12px;color:#6b7280">Our prob vs implied</div></div>
+        <div><div style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px">Confidence</div><div style="margin-top:4px">${confBar(g.confidence_score)}</div></div>
+      </div>
+      <div style="margin-top:12px;background:#f9fafb;border-radius:6px;padding:10px 12px;border-left:3px solid #16a34a">
+        <span style="color:#16a34a;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">AI Reasoning · </span>
+        <span style="color:#6b7280;font-size:13px">${g.reasoning}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
+
+  return `<!DOCTYPE html>
+<html>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f3f4f6;margin:0;padding:20px">
+<div style="max-width:620px;margin:0 auto">
+  <div style="background:linear-gradient(135deg,#14532d,#16a34a);border-radius:12px;padding:24px;margin-bottom:20px;text-align:center">
+    <div style="font-size:28px;margin-bottom:6px">⚾</div>
+    <div style="color:#fff;font-size:20px;font-weight:700">MLB Value Picks</div>
+    <div style="color:#bbf7d0;font-size:13px;margin-top:4px">${timeLabel} Update · ${today}</div>
+  </div>
+  <div style="display:flex;gap:10px;margin-bottom:20px">
+    <div style="flex:1;background:#fff;border-radius:10px;padding:14px;text-align:center;border:1px solid #e5e7eb">
+      <div style="font-size:22px;font-weight:700;color:#16a34a">${sorted.length}</div>
+      <div style="font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px">Games Today</div>
+    </div>
+    <div style="flex:1;background:#fff;border-radius:10px;padding:14px;text-align:center;border:1px solid #e5e7eb">
+      <div style="font-size:22px;font-weight:700;color:#16a34a">${posEV}</div>
+      <div style="font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px">Pos EV Games</div>
+    </div>
+    <div style="flex:1;background:#fff;border-radius:10px;padding:14px;text-align:center;border:1px solid #e5e7eb">
+      <div style="font-size:22px;font-weight:700;color:#16a34a">${best ? (best.ev_percentage > 0 ? '+' : '') + best.ev_percentage.toFixed(1) + '%' : '—'}</div>
+      <div style="font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px">Best EV</div>
+    </div>
+    <div style="flex:1;background:#fff;border-radius:10px;padding:14px;text-align:center;border:1px solid #e5e7eb">
+      <div style="font-size:22px;font-weight:700;color:#16a34a">${best ? '$' + ((best.kelly_fraction / 100) * bankroll).toFixed(0) : '—'}</div>
+      <div style="font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px">Top Kelly Bet</div>
+    </div>
+  </div>
+  ${gameRows}
+  <div style="text-align:center;color:#9ca3af;font-size:11px;margin-top:16px;padding:12px">
+    Kelly capped at 25% · Odds estimated by AI · For informational use only · Bet responsibly
+  </div>
+</div>
+</body>
+</html>`;
+}
+
+function savePicks(games, dataDir) {
+  const date = todayStr();
+  const file = path.join(dataDir, `picks-${date}.json`);
+  const existing = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : { date, games: [], sent_at: [] };
+  existing.games = games;
+  existing.sent_at = [...(existing.sent_at || []), new Date().toISOString()];
+  fs.writeFileSync(file, JSON.stringify(existing, null, 2));
+  console.log('Saved picks to', file);
+}
+
+async function main() {
+  const { ANTHROPIC_API_KEY, GMAIL_USER, GMAIL_APP_PASSWORD, EMAIL_TO } = process.env;
+  if (!ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY not set');
+  if (!GMAIL_USER || !GMAIL_APP_PASSWORD) throw new Error('Gmail credentials not set');
+  if (!EMAIL_TO) throw new Error('EMAIL_TO not set');
+
+  const dataDir = ensureDataDir();
+  const timeLabel = getTimeLabel();
+  console.log(`Running ${timeLabel} picks email...`);
+
+  const espnEvents = await fetchESPN();
+  console.log(`ESPN: ${espnEvents.length} games found`);
+
+  const games = await getAnalysis(espnEvents, ANTHROPIC_API_KEY);
+  console.log(`Analysis complete: ${games.length} games`);
+
+  savePicks(games, dataDir);
+
+  const html = buildPicksEmail(games, timeLabel);
+  const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' });
+  await sendEmail(EMAIL_TO, GMAIL_USER, GMAIL_APP_PASSWORD, `⚾ MLB Picks — ${timeLabel} · ${date}`, html);
+  console.log('Done!');
+}
+
+main().catch(err => { console.error('Error:', err.message); process.exit(1); });
