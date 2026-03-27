@@ -6,25 +6,25 @@
       "away_team": "Los Angeles Angels",
       "commence_time": "8:10 PM ET",
       "pick": "Houston Astros",
-      "pick_odds": -130,
+      "pick_odds": -135,
       "our_probability": 0.61,
-      "implied_probability": 0.565,
-      "ev_percentage": 4.7,
+      "implied_probability": 0.574,
+      "ev_percentage": 6.27,
       "confidence_score": 68,
-      "kelly_fraction": 6.8,
-      "reasoning": "Houston's home opener against a rebuilding Angels team presents solid value. The Astros' rotation depth and offensive experience should translate well in this spot, with the line undervaluing their home field advantage."
+      "kelly_fraction": 9.1,
+      "reasoning": "Astros bounce back at home after opening loss with superior rotation depth. Angels' hot start unlikely sustainable against Houston's veteran lineup and bullpen advantage."
     },
     {
       "home_team": "Seattle Mariners",
       "away_team": "Cleveland Guardians",
       "commence_time": "9:40 PM ET",
       "pick": "Seattle Mariners",
-      "pick_odds": -115,
-      "our_probability": 0.535,
-      "ev_percentage": 2.8,
-      "confidence_score": 62,
-      "kelly_fraction": 3.9,
-      "reasoning": "Seattle's pitching staff at home in T-Mobile Park creates a slight edge over Cleveland. The Mariners' rotation has been consistently undervalued by the market in early season home games."
+      "pick_odds": -110,
+      "our_probability": 0.524,
+      "ev_percentage": 6.86,
+      "confidence_score": 66,
+      "kelly_fraction": 6.9,
+      "reasoning": "Mariners at T-Mobile Park with revenge factor after opening series loss. Seattle's pitching staff typically performs better at home, and Cleveland may struggle with West Coast travel in early season."
     },
     {
       "home_team": "Los Angeles Dodgers",
@@ -32,28 +32,29 @@
       "commence_time": "10:10 PM ET",
       "pick": "Los Angeles Dodgers",
       "pick_odds": -165,
-      "our_probability": 0.64,
+      "our_probability": 0.65,
       "implied_probability": 0.623,
-      "ev_percentage": 1.9,
-      "confidence_score": 58,
-      "kelly_fraction": 2.2,
-      "reasoning": "The Dodgers' superior rotation depth and home field advantage at Dodger Stadium provides marginal value. Arizona's early season struggles continue against elite pitching staffs."
+      "ev_percentage": 4.33,
+      "confidence_score": 72,
+      "kelly_fraction": 6.6,
+      "reasoning": "Dodgers' superior depth and home field advantage at Dodger Stadium creates value despite heavy favorite status. Arizona's early season struggles continue against elite competition."
     },
     {
       "home_team": "San Diego Padres",
       "away_team": "Detroit Tigers",
       "commence_time": "9:40 PM ET",
-      "pick": "San Diego Padres",
-      "pick_odds": -140,
-      "our_probability": 0.59,
-      "implied_probability": 0.583,
-      "ev_percentage": 1.2,
-      "confidence_score": 55,
-      "kelly_fraction": 1.7,
-      "reasoning": "San Diego's pitching at Petco Park creates a small edge against Detroit's inconsistent offense. The line slightly favors the road team more than warranted given the venue advantage."
+      "pick": "Detroit Tigers",
+      "pick_odds": 145,
+      "our_probability": 0.44,
+      "implied_probability": 0.408,
+      "ev_percentage": 7.84,
+      "confidence_score": 64,
+      "kelly_fraction": 5.4,
+      "reasoning": "Tigers showing early season life with improved offensive approach. Padres still adjusting after roster changes, and the plus-money on Detroit provides solid value for upset potential."
     }
   ],
   "sent_at": [
-    "2026-03-27T23:52:14.003Z"
+    "2026-03-27T23:52:14.003Z",
+    "2026-03-27T23:58:43.340Z"
   ]
 }
