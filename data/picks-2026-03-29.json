@@ -2,85 +2,108 @@
   "date": "2026-03-29",
   "games": [
     {
+      "home_team": "Houston Astros",
+      "away_team": "Los Angeles Angels",
+      "commence_time": "2:11 PM ET",
+      "pick": "Los Angeles Angels",
+      "pick_odds": 450,
+      "ev": 384.88,
+      "kelly": 25,
+      "sim_home_win_pct": 6.45,
+      "sim_away_win_pct": 88.16
+    },
+    {
       "home_team": "Atlanta Braves",
       "away_team": "Kansas City Royals",
-      "commence_time": "1:35 PM ET",
+      "commence_time": "1:36 PM ET",
       "pick": "Atlanta Braves",
-      "pick_odds": -145,
-      "our_probability": 0.62,
-      "implied_probability": 0.592,
-      "ev_percentage": 4.73,
-      "confidence_score": 68,
-      "kelly_fraction": 6.8,
-      "reasoning": "Atlanta's 2-0 start against KC's 0-2 record suggests strong early form. Home field advantage and likely superior pitching depth favor the Braves at reasonable odds."
-    },
-    {
-      "home_team": "Baltimore Orioles",
-      "away_team": "Minnesota Twins",
-      "commence_time": "1:35 PM ET",
-      "pick": "Baltimore Orioles",
-      "pick_odds": -120,
-      "our_probability": 0.58,
-      "implied_probability": 0.545,
-      "ev_percentage": 6.42,
-      "confidence_score": 62,
-      "kelly_fraction": 7,
-      "reasoning": "Both teams at 1-1 but Baltimore's improved roster and home advantage provide slight edge. The line seems to undervalue the Orioles' recent organizational improvements."
-    },
-    {
-      "home_team": "Toronto Blue Jays",
-      "away_team": "Athletics",
-      "commence_time": "1:37 PM ET",
-      "pick": "Toronto Blue Jays",
-      "pick_odds": -165,
-      "our_probability": 0.68,
-      "implied_probability": 0.623,
-      "ev_percentage": 9.15,
-      "confidence_score": 72,
-      "kelly_fraction": 8.7,
-      "reasoning": "Toronto's 2-0 record against Oakland's 0-2 start reflects the talent gap. Athletics in rebuild mode while Blue Jays have playoff aspirations and stronger rotation."
+      "pick_odds": 520,
+      "ev": 256.81,
+      "kelly": 25,
+      "sim_home_win_pct": 57.55,
+      "sim_away_win_pct": 27.15
     },
     {
       "home_team": "Miami Marlins",
       "away_team": "Colorado Rockies",
-      "commence_time": "1:40 PM ET",
+      "commence_time": "1:41 PM ET",
       "pick": "Miami Marlins",
-      "pick_odds": -135,
-      "our_probability": 0.61,
-      "implied_probability": 0.574,
-      "ev_percentage": 6.27,
-      "confidence_score": 65,
-      "kelly_fraction": 7.4,
-      "reasoning": "Miami's 2-0 start versus Colorado's 0-2 record plus home field advantage. Rockies traditionally struggle away from Coors Field's thin air environment."
+      "pick_odds": 112,
+      "ev": 95.7608,
+      "kelly": 25,
+      "sim_home_win_pct": 92.34,
+      "sim_away_win_pct": 3.44
     },
     {
       "home_team": "Milwaukee Brewers",
       "away_team": "Chicago White Sox",
-      "commence_time": "2:10 PM ET",
-      "pick": "Milwaukee Brewers",
-      "pick_odds": -155,
-      "our_probability": 0.66,
-      "implied_probability": 0.608,
-      "ev_percentage": 8.55,
-      "confidence_score": 71,
-      "kelly_fraction": 8.2,
-      "reasoning": "Brewers' 2-0 record against White Sox's 0-2 start reflects organizational strength differences. Chicago in full rebuild while Milwaukee maintains competitive roster and superior pitching development."
+      "commence_time": "2:11 PM ET",
+      "pick": "Chicago White Sox",
+      "pick_odds": -430,
+      "ev": 22.479302325581397,
+      "kelly": 25,
+      "sim_home_win_pct": 0.25,
+      "sim_away_win_pct": 99.37
     },
     {
-      "home_team": "St. Louis Cardinals",
-      "away_team": "Tampa Bay Rays",
-      "commence_time": "2:15 PM ET",
-      "pick": "St. Louis Cardinals",
-      "pick_odds": -140,
-      "our_probability": 0.583,
-      "ev_percentage": 2.91,
-      "confidence_score": 58,
-      "kelly_fraction": 3.6,
-      "reasoning": "Cardinals' 2-0 start looks good but Tampa Bay typically performs well despite slow starts. Home advantage provides modest edge in what should be competitive matchup."
+      "home_team": "New York Mets",
+      "away_team": "Pittsburgh Pirates",
+      "commence_time": "1:41 PM ET",
+      "pick": "New York Mets",
+      "pick_odds": -132,
+      "ev": 13.06484848484848,
+      "kelly": 17.245599999999992,
+      "sim_home_win_pct": 64.33,
+      "sim_away_win_pct": 22.84
+    },
+    {
+      "home_team": "Toronto Blue Jays",
+      "away_team": "Oakland Athletics",
+      "commence_time": "1:40 PM ET",
+      "pick": "Toronto Blue Jays",
+      "pick_odds": -1100,
+      "ev": 8.643636363636364,
+      "kelly": 25,
+      "sim_home_win_pct": 99.59,
+      "sim_away_win_pct": 0.13
+    },
+    {
+      "home_team": "Baltimore Orioles",
+      "away_team": "Minnesota Twins",
+      "commence_time": "1:36 PM ET",
+      "pick": "Baltimore Orioles",
+      "pick_odds": 116,
+      "ev": 2.0167999999999964,
+      "kelly": 1.7386206896551692,
+      "sim_home_win_pct": 47.23,
+      "sim_away_win_pct": 41.63
+    },
+    {
+      "home_team": "Philadelphia Phillies",
+      "away_team": "Texas Rangers",
+      "commence_time": "1:36 PM ET",
+      "pick": "Texas Rangers",
+      "pick_odds": -4500,
+      "ev": -0.6808888888888975,
+      "kelly": 0,
+      "sim_home_win_pct": 1.02,
+      "sim_away_win_pct": 97.16
+    },
+    {
+      "home_team": "Cincinnati Reds",
+      "away_team": "Boston Red Sox",
+      "commence_time": "1:41 PM ET",
+      "pick": "Boston Red Sox",
+      "pick_odds": -225,
+      "ev": -4.8688888888889,
+      "kelly": 0,
+      "sim_home_win_pct": 21.47,
+      "sim_away_win_pct": 65.86
     }
   ],
   "sent_at": [
     "2026-03-29T15:04:29.606Z",
-    "2026-03-29T18:01:22.073Z"
+    "2026-03-29T18:01:22.073Z",
+    "2026-03-29T18:52:38.845Z"
   ]
 }
