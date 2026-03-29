@@ -315,11 +315,23 @@ JSON only, no markdown.`;
 
   const raw = result.content?.map(b => b.text || '').join('') || '';
   const clean = raw.replace(/```json|```/g, '').replace(/:\s*\+(\d)/g, ': $1').trim();
-  try { return JSON.parse(clean); }
+ try { return JSON.parse(clean); }
   catch(e) {
     const m = raw.match(/\[[\s\S]*\]/);
-    if (m) return JSON.parse(m[0].replace(/:\s*\+(\d)/g, ': $1'));
-    throw new Error('Could not parse AI response');
+    if (m) {
+      try { return JSON.parse(m[0].replace(/:\s*\+(\d)/g, ': $1')); }
+      catch(e2) {}
+    }
+    // Last resort: ask Claude to fix its own output
+    const fix = await httpsPost('api.anthropic.com', '/v1/messages',
+      { 'Content-Type': 'application/json', 'x-api-key': anthropicKey, 'anthropic-version': '2023-06-01' },
+      { model: 'claude-sonnet-4-20250514', max_tokens: 4000, messages: [
+        { role: 'user', content: `Fix this JSON array so it is valid. Return ONLY the fixed JSON array, nothing else:\n\n${raw.slice(0, 8000)}` }
+      ]}
+    );
+    const fixRaw = fix.content?.map(b => b.text || '').join('') || '';
+    const fixClean = fixRaw.replace(/```json|```/g, '').replace(/:\s*\+(\d)/g, ': $1').trim();
+    return JSON.parse(fixClean);
   }
 }
 
