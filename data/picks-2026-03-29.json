@@ -53,5 +53,60 @@
     "2026-03-29T18:57:21.202Z",
     "2026-03-29T19:15:03.979Z",
     "2026-03-29T21:02:58.589Z"
-  ]
+  ],
+  "results": [
+    {
+      "home_team": "Milwaukee Brewers",
+      "away_team": "Chicago White Sox",
+      "commence_time": "2:10 PM ET",
+      "pick": "Milwaukee Brewers",
+      "pick_odds": 470,
+      "ev": 224.38699999999997,
+      "kelly": 25,
+      "sim_home_win_pct": 56.91,
+      "sim_away_win_pct": 34.88,
+      "bet_amount": null,
+      "result": "W"
+    },
+    {
+      "home_team": "Houston Astros",
+      "away_team": "Los Angeles Angels",
+      "commence_time": "8:10 PM ET",
+      "pick": "Los Angeles Angels",
+      "pick_odds": 220,
+      "ev": 156.03200000000004,
+      "kelly": 25,
+      "sim_home_win_pct": 14.68,
+      "sim_away_win_pct": 80.01,
+      "bet_amount": null,
+      "result": "L"
+    },
+    {
+      "home_team": "St. Louis Cardinals",
+      "away_team": "Tampa Bay Rays",
+      "commence_time": "7:45 PM ET",
+      "pick": "Tampa Bay Rays",
+      "pick_odds": 105,
+      "ev": 81.589,
+      "kelly": 25,
+      "sim_home_win_pct": 8.23,
+      "sim_away_win_pct": 88.58,
+      "bet_amount": null,
+      "result": "W"
+    },
+    {
+      "home_team": "Seattle Mariners",
+      "away_team": "Cleveland Guardians",
+      "commence_time": "9:40 PM ET",
+      "pick": "Cleveland Guardians",
+      "pick_odds": 122,
+      "ev": -14.21920000000001,
+      "kelly": 0,
+      "sim_home_win_pct": 47.21,
+      "sim_away_win_pct": 38.64,
+      "bet_amount": null,
+      "result": "L"
+    }
+  ],
+  "scored_at": "2026-03-30T19:59:20.797Z"
 }
