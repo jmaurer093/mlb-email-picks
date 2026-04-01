@@ -1,0 +1,19 @@
+{
+  "meta": {
+    "created": "2026-03-30T00:00:00.000Z",
+    "season": 2026,
+    "start_date": "2026-03-30"
+  },
+  "season_stats": {
+    "wins": 0,
+    "losses": 0,
+    "pushes": 0,
+    "pending": 0,
+    "profit": 0,
+    "total_wagered": 0,
+    "roi": 0,
+    "win_pct": 0,
+    "record": "0-0"
+  },
+  "games": {}
+}
