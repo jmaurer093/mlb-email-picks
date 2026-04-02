@@ -1,0 +1,41 @@
+{
+  "date": "2026-04-02",
+  "games": [
+    {
+      "home_team": "Arizona Diamondbacks",
+      "away_team": "Atlanta Braves",
+      "commence_time": "9:40 PM ET",
+      "pick": "Atlanta Braves",
+      "pick_odds": -122,
+      "ev": 67.86475409836066,
+      "kelly": 25,
+      "sim_home_win_pct": 3.32,
+      "sim_away_win_pct": 92.25
+    },
+    {
+      "home_team": "Kansas City Royals",
+      "away_team": "Minnesota Twins",
+      "commence_time": "2:10 PM ET",
+      "pick": "Minnesota Twins",
+      "pick_odds": 100,
+      "ev": 67.21999999999998,
+      "kelly": 25,
+      "sim_home_win_pct": 6.71,
+      "sim_away_win_pct": 83.61
+    },
+    {
+      "home_team": "San Francisco Giants",
+      "away_team": "New York Mets",
+      "commence_time": "10:15 PM ET",
+      "pick": "New York Mets",
+      "pick_odds": -124,
+      "ev": 6.237419354838725,
+      "kelly": 7.734400000000019,
+      "sim_home_win_pct": 24.4,
+      "sim_away_win_pct": 58.81
+    }
+  ],
+  "sent_at": [
+    "2026-04-02T00:01:29.516Z"
+  ]
+}
