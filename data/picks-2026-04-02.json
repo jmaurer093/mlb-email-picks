@@ -6,11 +6,11 @@
       "away_team": "Minnesota Twins",
       "commence_time": "8:10 PM ET",
       "pick": "Minnesota Twins",
-      "pick_odds": 136,
-      "ev": 97.74440000000004,
+      "pick_odds": 130,
+      "ev": 92.48699999999998,
       "kelly": 25,
-      "sim_home_win_pct": 9.32,
-      "sim_away_win_pct": 83.79
+      "sim_home_win_pct": 9.44,
+      "sim_away_win_pct": 83.69
     },
     {
       "home_team": "Arizona Diamondbacks",
@@ -18,10 +18,10 @@
       "commence_time": "9:40 PM ET",
       "pick": "Atlanta Braves",
       "pick_odds": -118,
-      "ev": 70.35406779661015,
+      "ev": 70.4279661016949,
       "kelly": 25,
-      "sim_home_win_pct": 3.37,
-      "sim_away_win_pct": 92.21
+      "sim_home_win_pct": 3.32,
+      "sim_away_win_pct": 92.25
     },
     {
       "home_team": "San Francisco Giants",
@@ -29,14 +29,15 @@
       "commence_time": "10:15 PM ET",
       "pick": "New York Mets",
       "pick_odds": -124,
-      "ev": 6.327741935483866,
-      "kelly": 7.846399999999994,
-      "sim_home_win_pct": 24.4,
-      "sim_away_win_pct": 58.86
+      "ev": 6.147096774193539,
+      "kelly": 7.622399999999989,
+      "sim_home_win_pct": 24.41,
+      "sim_away_win_pct": 58.76
     }
   ],
   "sent_at": [
     "2026-04-02T00:01:29.516Z",
-    "2026-04-02T13:39:50.342Z"
+    "2026-04-02T13:39:50.342Z",
+    "2026-04-02T17:11:11.733Z"
   ]
 }
