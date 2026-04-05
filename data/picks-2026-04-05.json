@@ -1,0 +1,96 @@
+{
+  "date": "2026-04-05",
+  "games": [
+    {
+      "home_team": "Colorado Rockies",
+      "away_team": "Philadelphia Phillies",
+      "commence_time": "8:40 PM ET",
+      "pick": "Colorado Rockies",
+      "pick_odds": 198,
+      "ev": 77.8762,
+      "kelly": 25,
+      "sim_home_win_pct": 59.69,
+      "sim_away_win_pct": 28.76
+    },
+    {
+      "home_team": "San Francisco Giants",
+      "away_team": "New York Mets",
+      "commence_time": "10:15 PM ET",
+      "pick": "New York Mets",
+      "pick_odds": -102,
+      "ev": 41.12274509803922,
+      "kelly": 25,
+      "sim_home_win_pct": 16.4,
+      "sim_away_win_pct": 71.26
+    },
+    {
+      "home_team": "Los Angeles Angels",
+      "away_team": "Seattle Mariners",
+      "commence_time": "9:38 PM ET",
+      "pick": "Seattle Mariners",
+      "pick_odds": -156,
+      "ev": 38.40410256410256,
+      "kelly": 25,
+      "sim_home_win_pct": 9.02,
+      "sim_away_win_pct": 84.34
+    },
+    {
+      "home_team": "Arizona Diamondbacks",
+      "away_team": "Atlanta Braves",
+      "commence_time": "9:40 PM ET",
+      "pick": "Atlanta Braves",
+      "pick_odds": 152,
+      "ev": 22.925600000000014,
+      "kelly": 15.082631578947375,
+      "sim_home_win_pct": 33.34,
+      "sim_away_win_pct": 48.78
+    },
+    {
+      "home_team": "New York Yankees",
+      "away_team": "Miami Marlins",
+      "commence_time": "1:05 PM ET",
+      "pick": "New York Yankees",
+      "pick_odds": 235,
+      "ev": 9.980499999999992,
+      "kelly": 4.247021276595741,
+      "sim_home_win_pct": 32.83,
+      "sim_away_win_pct": 52.41
+    },
+    {
+      "home_team": "Minnesota Twins",
+      "away_team": "Tampa Bay Rays",
+      "commence_time": "2:10 PM ET",
+      "pick": "Tampa Bay Rays",
+      "pick_odds": -370,
+      "ev": 1.63432432432431,
+      "kelly": 6.046999999999949,
+      "sim_home_win_pct": 13.77,
+      "sim_away_win_pct": 80.01
+    },
+    {
+      "home_team": "Kansas City Royals",
+      "away_team": "Milwaukee Brewers",
+      "commence_time": "2:10 PM ET",
+      "pick": "Kansas City Royals",
+      "pick_odds": -148,
+      "ev": -10.73675675675675,
+      "kelly": 0,
+      "sim_home_win_pct": 53.27,
+      "sim_away_win_pct": 33.82
+    },
+    {
+      "home_team": "Texas Rangers",
+      "away_team": "Cincinnati Reds",
+      "commence_time": "8:05 PM ET",
+      "pick": "Texas Rangers",
+      "pick_odds": 176,
+      "ev": -14.633200000000002,
+      "kelly": 0,
+      "sim_home_win_pct": 30.93,
+      "sim_away_win_pct": 53.46
+    }
+  ],
+  "sent_at": [
+    "2026-04-05T00:00:31.608Z"
+  ]
+}
