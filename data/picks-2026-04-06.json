@@ -1,0 +1,151 @@
+{
+  "date": "2026-04-06",
+  "games": [
+    {
+      "home_team": "Boston Red Sox",
+      "away_team": "Milwaukee Brewers",
+      "commence_time": "7:10 PM ET",
+      "pick": "Milwaukee Brewers",
+      "pick_odds": -108,
+      "ev": 90.80148148148149,
+      "kelly": 25,
+      "sim_home_win_pct": 0.4,
+      "sim_away_win_pct": 99.07
+    },
+    {
+      "home_team": "Miami Marlins",
+      "away_team": "Cincinnati Reds",
+      "commence_time": "7:10 PM ET",
+      "pick": "Miami Marlins",
+      "pick_odds": -118,
+      "ev": 82.06694915254235,
+      "kelly": 25,
+      "sim_home_win_pct": 98.55,
+      "sim_away_win_pct": 0.64
+    },
+    {
+      "home_team": "Pittsburgh Pirates",
+      "away_team": "San Diego Padres",
+      "commence_time": "7:10 PM ET",
+      "pick": "Pittsburgh Pirates",
+      "pick_odds": -118,
+      "ev": 78.72305084745761,
+      "kelly": 25,
+      "sim_home_win_pct": 96.74,
+      "sim_away_win_pct": 1.6
+    },
+    {
+      "home_team": "Minnesota Twins",
+      "away_team": "Detroit Tigers",
+      "commence_time": "8:10 PM ET",
+      "pick": "Detroit Tigers",
+      "pick_odds": 108,
+      "ev": 59.55679999999999,
+      "kelly": 25,
+      "sim_home_win_pct": 12.67,
+      "sim_away_win_pct": 76.71
+    },
+    {
+      "home_team": "Los Angeles Angels",
+      "away_team": "Atlanta Braves",
+      "commence_time": "9:38 PM ET",
+      "pick": "Atlanta Braves",
+      "pick_odds": -158,
+      "ev": 44.4146835443038,
+      "kelly": 25,
+      "sim_home_win_pct": 4.48,
+      "sim_away_win_pct": 88.44
+    },
+    {
+      "home_team": "Toronto Blue Jays",
+      "away_team": "Los Angeles Dodgers",
+      "commence_time": "7:07 PM ET",
+      "pick": "Toronto Blue Jays",
+      "pick_odds": 114,
+      "ev": 38.179799999999965,
+      "kelly": 25,
+      "sim_home_win_pct": 64.57,
+      "sim_away_win_pct": 22.9
+    },
+    {
+      "home_team": "Colorado Rockies",
+      "away_team": "Houston Astros",
+      "commence_time": "8:40 PM ET",
+      "pick": "Houston Astros",
+      "pick_odds": -158,
+      "ev": 27.873291139240507,
+      "kelly": 25,
+      "sim_home_win_pct": 13.26,
+      "sim_away_win_pct": 78.31
+    },
+    {
+      "home_team": "Chicago White Sox",
+      "away_team": "Baltimore Orioles",
+      "commence_time": "7:10 PM ET",
+      "pick": "Chicago White Sox",
+      "pick_odds": 120,
+      "ev": 13.762000000000008,
+      "kelly": 11.468333333333337,
+      "sim_home_win_pct": 51.71,
+      "sim_away_win_pct": 33.31
+    },
+    {
+      "home_team": "San Francisco Giants",
+      "away_team": "Philadelphia Phillies",
+      "commence_time": "10:15 PM ET",
+      "pick": "Philadelphia Phillies",
+      "pick_odds": -112,
+      "ev": 5.394285714285707,
+      "kelly": 6.041599999999992,
+      "sim_home_win_pct": 25.64,
+      "sim_away_win_pct": 55.68
+    },
+    {
+      "home_team": "Washington Nationals",
+      "away_team": "St. Louis Cardinals",
+      "commence_time": "7:05 PM ET",
+      "pick": "Washington Nationals",
+      "pick_odds": -108,
+      "ev": 4.943703703703717,
+      "kelly": 5.339200000000013,
+      "sim_home_win_pct": 54.49,
+      "sim_away_win_pct": 33.63
+    },
+    {
+      "home_team": "Cleveland Guardians",
+      "away_team": "Kansas City Royals",
+      "commence_time": "7:10 PM ET",
+      "pick": "Kansas City Royals",
+      "pick_odds": -102,
+      "ev": -2.1092156862745015,
+      "kelly": 0,
+      "sim_home_win_pct": 34.98,
+      "sim_away_win_pct": 49.43
+    },
+    {
+      "home_team": "Texas Rangers",
+      "away_team": "Seattle Mariners",
+      "commence_time": "8:05 PM ET",
+      "pick": "Texas Rangers",
+      "pick_odds": -112,
+      "ev": -4.581071428571438,
+      "kelly": 0,
+      "sim_home_win_pct": 50.41,
+      "sim_away_win_pct": 36.02
+    },
+    {
+      "home_team": "Tampa Bay Rays",
+      "away_team": "Chicago Cubs",
+      "commence_time": "7:10 PM ET",
+      "pick": "Tampa Bay Rays",
+      "pick_odds": -115,
+      "ev": -5.568260869565222,
+      "kelly": 0,
+      "sim_home_win_pct": 50.51,
+      "sim_away_win_pct": 35.56
+    }
+  ],
+  "sent_at": [
+    "2026-04-06T00:04:13.895Z"
+  ]
+}
