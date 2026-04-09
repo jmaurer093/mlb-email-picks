@@ -2,37 +2,15 @@
   "date": "2026-04-09",
   "games": [
     {
-      "home_team": "Miami Marlins",
-      "away_team": "Cincinnati Reds",
-      "commence_time": "7:10 PM ET",
-      "pick": "Cincinnati Reds",
-      "pick_odds": 1000,
-      "ev": 199.52999999999997,
-      "kelly": 19.953,
-      "sim_home_win_pct": 57.03,
-      "sim_away_win_pct": 27.23
-    },
-    {
       "home_team": "New York Mets",
       "away_team": "Arizona Diamondbacks",
       "commence_time": "7:10 PM ET",
       "pick": "New York Mets",
-      "pick_odds": -162,
-      "ev": 14.341975308641985,
-      "kelly": 23.234000000000012,
-      "sim_home_win_pct": 70.7,
-      "sim_away_win_pct": 16.88
-    },
-    {
-      "home_team": "Minnesota Twins",
-      "away_team": "Detroit Tigers",
-      "commence_time": "8:10 PM ET",
-      "pick": "Detroit Tigers",
-      "pick_odds": 110,
-      "ev": 12.560000000000016,
-      "kelly": 11.418181818181832,
-      "sim_home_win_pct": 35.43,
-      "sim_away_win_pct": 53.6
+      "pick_odds": -190,
+      "ev": 8.063157894736817,
+      "kelly": 15.319999999999956,
+      "sim_home_win_pct": 70.8,
+      "sim_away_win_pct": 16.85
     },
     {
       "home_team": "Kansas City Royals",
@@ -40,10 +18,10 @@
       "commence_time": "8:10 PM ET",
       "pick": "Kansas City Royals",
       "pick_odds": -178,
-      "ev": 7.404831460674166,
-      "kelly": 13.180600000000014,
-      "sim_home_win_pct": 68.77,
-      "sim_away_win_pct": 17.84
+      "ev": 7.3423595505617945,
+      "kelly": 13.069399999999993,
+      "sim_home_win_pct": 68.73,
+      "sim_away_win_pct": 17.86
     },
     {
       "home_team": "San Diego Padres",
@@ -51,25 +29,15 @@
       "commence_time": "9:40 PM ET",
       "pick": "Colorado Rockies",
       "pick_odds": 168,
-      "ev": 1.2772000000000006,
-      "kelly": 0.7602380952380957,
-      "sim_home_win_pct": 41.16,
-      "sim_away_win_pct": 37.79
-    },
-    {
-      "home_team": "New York Yankees",
-      "away_team": "Athletics",
-      "commence_time": "7:05 PM ET",
-      "pick": "Athletics",
-      "pick_odds": 200,
-      "ev": -2.32,
-      "kelly": 0,
-      "sim_home_win_pct": 51.29,
-      "sim_away_win_pct": 32.56
+      "ev": 1.4111999999999902,
+      "kelly": 0.8399999999999944,
+      "sim_home_win_pct": 41.21,
+      "sim_away_win_pct": 37.84
     }
   ],
   "sent_at": [
     "2026-04-09T15:12:32.644Z",
-    "2026-04-09T17:56:54.211Z"
+    "2026-04-09T17:56:54.211Z",
+    "2026-04-09T20:38:53.328Z"
   ]
 }
