@@ -5,39 +5,40 @@
       "home_team": "New York Mets",
       "away_team": "Arizona Diamondbacks",
       "commence_time": "7:10 PM ET",
-      "pick": "New York Mets",
-      "pick_odds": -190,
-      "ev": 8.063157894736817,
-      "kelly": 15.319999999999956,
-      "sim_home_win_pct": 70.8,
-      "sim_away_win_pct": 16.85
-    },
-    {
-      "home_team": "Kansas City Royals",
-      "away_team": "Chicago White Sox",
-      "commence_time": "8:10 PM ET",
-      "pick": "Kansas City Royals",
-      "pick_odds": -178,
-      "ev": 7.3423595505617945,
-      "kelly": 13.069399999999993,
-      "sim_home_win_pct": 68.73,
-      "sim_away_win_pct": 17.86
+      "pick": "Arizona Diamondbacks",
+      "pick_odds": 285,
+      "ev": 52.767999999999994,
+      "kelly": 18.515087719298243,
+      "sim_home_win_pct": 38.62,
+      "sim_away_win_pct": 39.68
     },
     {
       "home_team": "San Diego Padres",
       "away_team": "Colorado Rockies",
-      "commence_time": "9:40 PM ET",
+      "commence_time": "10:10 PM ET",
       "pick": "Colorado Rockies",
-      "pick_odds": 168,
-      "ev": 1.4111999999999902,
-      "kelly": 0.8399999999999944,
-      "sim_home_win_pct": 41.21,
-      "sim_away_win_pct": 37.84
+      "pick_odds": 160,
+      "ev": -1.3560000000000016,
+      "kelly": 0,
+      "sim_home_win_pct": 41.14,
+      "sim_away_win_pct": 37.94
+    },
+    {
+      "home_team": "Kansas City Royals",
+      "away_team": "Chicago White Sox",
+      "commence_time": "2:10 PM ET",
+      "pick": "Kansas City Royals",
+      "pick_odds": -235,
+      "ev": -2.3082978723404257,
+      "kelly": 0,
+      "sim_home_win_pct": 68.53,
+      "sim_away_win_pct": 17.41
     }
   ],
   "sent_at": [
     "2026-04-09T15:12:32.644Z",
     "2026-04-09T17:56:54.211Z",
-    "2026-04-09T20:38:53.328Z"
+    "2026-04-09T20:38:53.328Z",
+    "2026-04-09T23:48:26.916Z"
   ]
 }
