@@ -224,7 +224,7 @@
       "sim_home_win_pct": 89.02,
       "sim_away_win_pct": 6.63,
       "bet_amount": null,
-      "result": null
+      "result": "W"
     },
     {
       "home_team": "Philadelphia Phillies",
@@ -263,7 +263,7 @@
       "sim_home_win_pct": 0,
       "sim_away_win_pct": 100,
       "bet_amount": null,
-      "result": null
+      "result": "W"
     },
     {
       "home_team": "Detroit Tigers",
@@ -302,7 +302,7 @@
       "sim_home_win_pct": 68.62,
       "sim_away_win_pct": 18.37,
       "bet_amount": null,
-      "result": null
+      "result": "W"
     },
     {
       "home_team": "San Diego Padres",
@@ -315,7 +315,7 @@
       "sim_home_win_pct": 27.01,
       "sim_away_win_pct": 56.03,
       "bet_amount": null,
-      "result": null
+      "result": "L"
     },
     {
       "home_team": "Athletics",
@@ -328,7 +328,7 @@
       "sim_home_win_pct": 44.27,
       "sim_away_win_pct": 37.59,
       "bet_amount": null,
-      "result": null
+      "result": "W"
     },
     {
       "home_team": "Baltimore Orioles",
@@ -354,7 +354,7 @@
       "sim_home_win_pct": 42.34,
       "sim_away_win_pct": 40.03,
       "bet_amount": null,
-      "result": null
+      "result": "L"
     },
     {
       "home_team": "Milwaukee Brewers",
@@ -367,8 +367,8 @@
       "sim_home_win_pct": 48.45,
       "sim_away_win_pct": 35.1,
       "bet_amount": null,
-      "result": null
+      "result": "L"
     }
   ],
-  "scored_at": "2026-04-15T02:29:40.272Z"
+  "scored_at": "2026-04-15T14:58:26.858Z"
 }
