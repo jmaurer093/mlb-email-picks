@@ -1,0 +1,173 @@
+{
+  "date": "2026-04-18",
+  "games": [
+    {
+      "home_team": "Minnesota Twins",
+      "away_team": "Cincinnati Reds",
+      "commence_time": "2:10 PM ET",
+      "pick": "Minnesota Twins",
+      "pick_odds": -132,
+      "ev": 59.14848484848485,
+      "kelly": 25,
+      "sim_home_win_pct": 90.55,
+      "sim_away_win_pct": 4.28
+    },
+    {
+      "home_team": "Arizona Diamondbacks",
+      "away_team": "Toronto Blue Jays",
+      "commence_time": "9:40 PM ET",
+      "pick": "Arizona Diamondbacks",
+      "pick_odds": -152,
+      "ev": 47.93394736842107,
+      "kelly": 25,
+      "sim_home_win_pct": 89.23,
+      "sim_away_win_pct": 5.95
+    },
+    {
+      "home_team": "Colorado Rockies",
+      "away_team": "Los Angeles Dodgers",
+      "commence_time": "3:10 PM ET",
+      "pick": "Los Angeles Dodgers",
+      "pick_odds": -290,
+      "ev": 7.855172413793121,
+      "kelly": 22.78000000000005,
+      "sim_home_win_pct": 12.55,
+      "sim_away_win_pct": 80.2
+    },
+    {
+      "home_team": "Boston Red Sox",
+      "away_team": "Detroit Tigers",
+      "commence_time": "7:10 PM ET",
+      "pick": "Detroit Tigers",
+      "pick_odds": -166,
+      "ev": 22.440120481927718,
+      "kelly": 25,
+      "sim_home_win_pct": 13.64,
+      "sim_away_win_pct": 76.41
+    },
+    {
+      "home_team": "New York Yankees",
+      "away_team": "Kansas City Royals",
+      "commence_time": "1:05 PM ET",
+      "pick": "New York Yankees",
+      "pick_odds": -162,
+      "ev": 16.44444444444444,
+      "kelly": 25,
+      "sim_home_win_pct": 72,
+      "sim_away_win_pct": 15.87
+    },
+    {
+      "home_team": "Washington Nationals",
+      "away_team": "San Francisco Giants",
+      "commence_time": "1:35 PM ET",
+      "pick": "Washington Nationals",
+      "pick_odds": -102,
+      "ev": 33.73588235294118,
+      "kelly": 25,
+      "sim_home_win_pct": 67.53,
+      "sim_away_win_pct": 21.49
+    },
+    {
+      "home_team": "Philadelphia Phillies",
+      "away_team": "Atlanta Braves",
+      "commence_time": "6:40 PM ET",
+      "pick": "Atlanta Braves",
+      "pick_odds": 108,
+      "ev": 35.42880000000002,
+      "kelly": 25,
+      "sim_home_win_pct": 21.42,
+      "sim_away_win_pct": 65.11
+    },
+    {
+      "home_team": "Chicago Cubs",
+      "away_team": "New York Mets",
+      "commence_time": "2:20 PM ET",
+      "pick": "Chicago Cubs",
+      "pick_odds": -106,
+      "ev": 24.649433962264155,
+      "kelly": 25,
+      "sim_home_win_pct": 64.14,
+      "sim_away_win_pct": 23.81
+    },
+    {
+      "home_team": "Pittsburgh Pirates",
+      "away_team": "Tampa Bay Rays",
+      "commence_time": "1:35 PM ET",
+      "pick": "Tampa Bay Rays",
+      "pick_odds": 140,
+      "ev": 45.655999999999985,
+      "kelly": 25,
+      "sim_home_win_pct": 25.01,
+      "sim_away_win_pct": 60.69
+    },
+    {
+      "home_team": "Miami Marlins",
+      "away_team": "Milwaukee Brewers",
+      "commence_time": "2026-04-18T20:10:00Z",
+      "pick": "Miami Marlins",
+      "pick_odds": -108,
+      "ev": -1.411851851851842,
+      "kelly": 0,
+      "sim_home_win_pct": 51.19,
+      "sim_away_win_pct": 34.87
+    },
+    {
+      "home_team": "Los Angeles Angels",
+      "away_team": "San Diego Padres",
+      "commence_time": "2026-04-19T01:38:00Z",
+      "pick": "San Diego Padres",
+      "pick_odds": -108,
+      "ev": -1.912592592592588,
+      "kelly": 0,
+      "sim_home_win_pct": 37.65,
+      "sim_away_win_pct": 50.93
+    },
+    {
+      "home_team": "Cleveland Guardians",
+      "away_team": "Baltimore Orioles",
+      "commence_time": "2026-04-18T22:10:00Z",
+      "pick": "Cleveland Guardians",
+      "pick_odds": -134,
+      "ev": -17.418955223880605,
+      "kelly": 0,
+      "sim_home_win_pct": 47.29,
+      "sim_away_win_pct": 36.22
+    },
+    {
+      "home_team": "Seattle Mariners",
+      "away_team": "Texas Rangers",
+      "commence_time": "2026-04-18T23:15:00Z",
+      "pick": "Seattle Mariners",
+      "pick_odds": -138,
+      "ev": -11.267391304347807,
+      "kelly": 0,
+      "sim_home_win_pct": 51.45,
+      "sim_away_win_pct": 33.33
+    },
+    {
+      "home_team": "Houston Astros",
+      "away_team": "St. Louis Cardinals",
+      "commence_time": "8:10 PM ET",
+      "pick": "St. Louis Cardinals",
+      "pick_odds": 124,
+      "ev": 13.814400000000004,
+      "kelly": 11.140645161290324,
+      "sim_home_win_pct": 38.32,
+      "sim_away_win_pct": 50.81
+    },
+    {
+      "home_team": "Athletics",
+      "away_team": "Chicago White Sox",
+      "commence_time": "4:07 PM ET",
+      "pick": "Chicago White Sox",
+      "pick_odds": 134,
+      "ev": 16.157599999999995,
+      "kelly": 12.057910447761191,
+      "sim_home_win_pct": 35.88,
+      "sim_away_win_pct": 49.64
+    }
+  ],
+  "sent_at": [
+    "2026-04-18T15:35:07.148Z"
+  ]
+}
