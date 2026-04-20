@@ -5,15 +5,15 @@
     "start_date": "2026-03-30"
   },
   "season_stats": {
-    "wins": 24,
-    "losses": 16,
+    "wins": 34,
+    "losses": 21,
     "pushes": 0,
-    "pending": 0,
-    "profit": 221.72,
-    "total_wagered": 4881.3,
-    "roi": 4.54,
-    "win_pct": 60,
-    "record": "24-16"
+    "pending": 10,
+    "profit": 115.24,
+    "total_wagered": 6765.4,
+    "roi": 1.7,
+    "win_pct": 61.8,
+    "record": "34-21"
   },
   "games": {
     "2026-04-16": [
@@ -1165,11 +1165,11 @@
         "away_pitcher": "Roki Sasaki",
         "home_era": 7.11,
         "away_era": 5.4,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T19:44:25.205Z"
+        "result": "L",
+        "home_score": 9,
+        "away_score": 6,
+        "final_result_str": "Los Angeles Dodgers 6, Colorado Rockies 9",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       },
       {
         "date": "2026-04-19",
@@ -1193,11 +1193,11 @@
         "away_pitcher": "Noah Schultz",
         "home_era": 3.34,
         "away_era": 3.86,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T22:39:35.535Z"
+        "result": "L",
+        "home_score": 4,
+        "away_score": 7,
+        "final_result_str": "Chicago White Sox 7, Athletics 4",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       },
       {
         "date": "2026-04-19",
@@ -1221,11 +1221,11 @@
         "away_pitcher": "Grant Holmes",
         "home_era": 3.77,
         "away_era": 3.32,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T22:39:35.535Z"
+        "result": "W",
+        "home_score": 2,
+        "away_score": 4,
+        "final_result_str": "Atlanta Braves 4, Philadelphia Phillies 2",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       },
       {
         "date": "2026-04-19",
@@ -1249,11 +1249,11 @@
         "away_pitcher": "Framber Valdez",
         "home_era": 7.88,
         "away_era": 3.3,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T22:39:35.535Z"
+        "result": "W",
+        "home_score": 2,
+        "away_score": 6,
+        "final_result_str": "Detroit Tigers 6, Boston Red Sox 2",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       },
       {
         "date": "2026-04-19",
@@ -1277,11 +1277,11 @@
         "away_pitcher": "Jacob Misiorowski",
         "home_era": 4.15,
         "away_era": 3.04,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T19:44:25.205Z"
+        "result": "L",
+        "home_score": 5,
+        "away_score": 3,
+        "final_result_str": "Milwaukee Brewers 3, Miami Marlins 5",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       },
       {
         "date": "2026-04-19",
@@ -1305,11 +1305,11 @@
         "away_pitcher": "Cole Ragans",
         "home_era": 3.18,
         "away_era": 6,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T22:39:35.535Z"
+        "result": "W",
+        "home_score": 7,
+        "away_score": 0,
+        "final_result_str": "Kansas City Royals 0, New York Yankees 7",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       },
       {
         "date": "2026-04-19",
@@ -1333,11 +1333,11 @@
         "away_pitcher": "Brady Singer",
         "home_era": 4.21,
         "away_era": 5.56,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T19:44:25.205Z"
+        "result": "L",
+        "home_score": 4,
+        "away_score": 7,
+        "final_result_str": "Cincinnati Reds 7, Minnesota Twins 4",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       },
       {
         "date": "2026-04-19",
@@ -1361,11 +1361,11 @@
         "away_pitcher": "Shane McClanahan",
         "home_era": 2.79,
         "away_era": 5,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T19:44:25.205Z"
+        "result": "W",
+        "home_score": 6,
+        "away_score": 3,
+        "final_result_str": "Tampa Bay Rays 3, Pittsburgh Pirates 6",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       },
       {
         "date": "2026-04-19",
@@ -1389,11 +1389,11 @@
         "away_pitcher": "Matthew Liberatore",
         "home_era": 6.75,
         "away_era": 3.81,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T19:44:25.205Z"
+        "result": "W",
+        "home_score": 5,
+        "away_score": 7,
+        "final_result_str": "St. Louis Cardinals 7, Houston Astros 5",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       },
       {
         "date": "2026-04-19",
@@ -1417,11 +1417,11 @@
         "away_pitcher": "Tobias Myers",
         "home_era": 5.74,
         "away_era": 3,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T19:44:25.205Z"
+        "result": "W",
+        "home_score": 2,
+        "away_score": 1,
+        "final_result_str": "New York Mets 1, Chicago Cubs 2",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       },
       {
         "date": "2026-04-19",
@@ -1445,11 +1445,11 @@
         "away_pitcher": "Trevor Rogers",
         "home_era": 3.2,
         "away_era": 4.08,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T19:44:25.205Z"
+        "result": "W",
+        "home_score": 8,
+        "away_score": 4,
+        "final_result_str": "Baltimore Orioles 4, Cleveland Guardians 8",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       },
       {
         "date": "2026-04-19",
@@ -1473,11 +1473,11 @@
         "away_pitcher": "Kevin Gausman",
         "home_era": 6.97,
         "away_era": 2.54,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T22:39:35.535Z"
+        "result": "W",
+        "home_score": 4,
+        "away_score": 10,
+        "final_result_str": "Toronto Blue Jays 10, Arizona Diamondbacks 4",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       },
       {
         "date": "2026-04-19",
@@ -1501,11 +1501,11 @@
         "away_pitcher": "Robbie Ray",
         "home_era": 1.5,
         "away_era": 2.86,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T19:44:25.205Z"
+        "result": "W",
+        "home_score": 3,
+        "away_score": 0,
+        "final_result_str": "San Francisco Giants 0, Washington Nationals 3",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       },
       {
         "date": "2026-04-19",
@@ -1529,11 +1529,11 @@
         "away_pitcher": "Michael King",
         "home_era": 2.35,
         "away_era": 2.28,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T22:39:35.535Z"
+        "result": "L",
+        "home_score": 1,
+        "away_score": 2,
+        "final_result_str": "San Diego Padres 2, Los Angeles Angels 1",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       },
       {
         "date": "2026-04-19",
@@ -1557,11 +1557,11 @@
         "away_pitcher": "MacKenzie Gore",
         "home_era": 2.25,
         "away_era": 4.15,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-19T22:39:35.535Z"
+        "result": "W",
+        "home_score": 5,
+        "away_score": 2,
+        "final_result_str": "Texas Rangers 2, Seattle Mariners 5",
+        "updated_at": "2026-04-20T21:16:55.647Z"
       }
     ],
     "2026-04-20": [
