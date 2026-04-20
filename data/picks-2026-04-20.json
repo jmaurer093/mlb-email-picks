@@ -7,31 +7,42 @@
       "commence_time": "7:05 PM ET",
       "pick": "Atlanta Braves",
       "pick_odds": -162,
-      "ev": 52.898024691358025,
+      "ev": 52.17024691358028,
       "kelly": 25,
-      "sim_home_win_pct": 2.37,
-      "sim_away_win_pct": 94.54
+      "sim_home_win_pct": 2.55,
+      "sim_away_win_pct": 94.09
     },
     {
       "home_team": "Colorado Rockies",
       "away_team": "Los Angeles Dodgers",
-      "commence_time": "8:40 PM ET",
+      "commence_time": "8:10 PM ET",
       "pick": "Los Angeles Dodgers",
       "pick_odds": -235,
       "ev": 25.917234042553172,
       "kelly": 25,
-      "sim_home_win_pct": 5.97,
+      "sim_home_win_pct": 5.96,
       "sim_away_win_pct": 88.33
+    },
+    {
+      "home_team": "Tampa Bay Rays",
+      "away_team": "Cincinnati Reds",
+      "commence_time": "7:10 PM ET",
+      "pick": "Tampa Bay Rays",
+      "pick_odds": -120,
+      "ev": 47.3816666666667,
+      "kelly": 25,
+      "sim_home_win_pct": 80.39,
+      "sim_away_win_pct": 9.2
     },
     {
       "home_team": "Cleveland Guardians",
       "away_team": "Houston Astros",
-      "commence_time": "1:08 PM ET",
+      "commence_time": "7:10 PM ET",
       "pick": "Houston Astros",
       "pick_odds": 100,
       "ev": 47.4,
       "kelly": 25,
-      "sim_home_win_pct": 16.12,
+      "sim_home_win_pct": 16.11,
       "sim_away_win_pct": 73.7
     },
     {
@@ -40,10 +51,10 @@
       "commence_time": "2:20 PM ET",
       "pick": "Chicago Cubs",
       "pick_odds": -110,
-      "ev": 40.79545454545457,
+      "ev": 40.8718181818182,
       "kelly": 25,
-      "sim_home_win_pct": 73.75,
-      "sim_away_win_pct": 15.9
+      "sim_home_win_pct": 73.79,
+      "sim_away_win_pct": 15.89
     },
     {
       "home_team": "Seattle Mariners",
@@ -51,43 +62,21 @@
       "commence_time": "2026-04-21T01:40:00Z",
       "pick": "Seattle Mariners",
       "pick_odds": -148,
-      "ev": -4.452972972972969,
+      "ev": -4.469729729729743,
       "kelly": 0,
-      "sim_home_win_pct": 57.02,
-      "sim_away_win_pct": 27.42
+      "sim_home_win_pct": 57.01,
+      "sim_away_win_pct": 27.43
     },
     {
       "home_team": "Kansas City Royals",
       "away_team": "Baltimore Orioles",
-      "commence_time": "2:10 PM ET",
+      "commence_time": "7:40 PM ET",
       "pick": "Kansas City Royals",
       "pick_odds": -102,
-      "ev": 14.704313725490215,
-      "kelly": 14.998400000000018,
-      "sim_home_win_pct": 57.92,
-      "sim_away_win_pct": 26.8
-    },
-    {
-      "home_team": "Boston Red Sox",
-      "away_team": "Detroit Tigers",
-      "commence_time": "1:35 PM ET",
-      "pick": "Detroit Tigers",
-      "pick_odds": 140,
-      "ev": 43.687999999999995,
-      "kelly": 25,
-      "sim_home_win_pct": 26.04,
-      "sim_away_win_pct": 59.87
-    },
-    {
-      "home_team": "Miami Marlins",
-      "away_team": "St. Louis Cardinals",
-      "commence_time": "1:40 PM ET",
-      "pick": "St. Louis Cardinals",
-      "pick_odds": 110,
-      "ev": 20.099,
-      "kelly": 18.27181818181818,
-      "sim_home_win_pct": 29.33,
-      "sim_away_win_pct": 57.19
+      "ev": 14.644901960784317,
+      "kelly": 14.937800000000005,
+      "sim_home_win_pct": 57.89,
+      "sim_away_win_pct": 26.82
     },
     {
       "home_team": "Los Angeles Angels",
@@ -101,19 +90,20 @@
       "sim_away_win_pct": 44.96
     },
     {
-      "home_team": "Tampa Bay Rays",
-      "away_team": "Cincinnati Reds",
-      "commence_time": "2026-04-20T22:40:00Z",
-      "pick": "Tampa Bay Rays",
-      "pick_odds": -120,
-      "ev": -9.94666666666667,
-      "kelly": 0,
-      "sim_home_win_pct": 49.12,
-      "sim_away_win_pct": 36.07
+      "home_team": "Miami Marlins",
+      "away_team": "St. Louis Cardinals",
+      "commence_time": "7:10 PM ET",
+      "pick": "St. Louis Cardinals",
+      "pick_odds": 116,
+      "ev": 23.552000000000017,
+      "kelly": 20.30344827586208,
+      "sim_home_win_pct": 29.32,
+      "sim_away_win_pct": 57.2
     }
   ],
   "sent_at": [
     "2026-04-20T14:28:06.670Z",
-    "2026-04-20T16:53:50.512Z"
+    "2026-04-20T16:53:50.512Z",
+    "2026-04-20T20:01:08.324Z"
   ]
 }
