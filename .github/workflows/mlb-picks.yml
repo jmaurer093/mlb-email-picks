@@ -3,9 +3,7 @@ name: MLB Value Picks
 on:
   schedule:
     - cron: '0 13 * * *'
-    - cron: '0 16 * * *'
-    - cron: '0 19 * * *'
-    - cron: '0 22 * * *'
+    - cron: '1 16 * * *'
   workflow_dispatch:
     inputs:
       run_type:
