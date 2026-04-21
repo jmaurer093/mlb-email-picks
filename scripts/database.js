@@ -55,6 +55,8 @@ function savePredictions(date, predictions) {
       away_pitcher: p.awayPitcherName || null,
       home_era: p.homeStats?.starterERA ?? null,
       away_era: p.awayStats?.starterERA ?? null,
+      home_plate_ump: p.homePlateUmp || null,
+      ump_factor: p.umpFactor ?? null,
       result: 'pending',
       home_score: null,
       away_score: null,
