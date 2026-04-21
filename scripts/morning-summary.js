@@ -347,14 +347,29 @@ async function main() {
   const yesterday = yesterdayStr();
   console.log(`Running morning summary for ${yesterday}...`);
 
-  // Fetch yesterday's scores
-  const scores = await fetchYesterdayScores(yesterday);
-  console.log(`Found ${scores.length} final scores`);
+  // ── Sweep ALL pending dates, not just yesterday ──
+  // This catches games from 2+ days ago that were missed (late games, postponements, etc.)
+  const allGamesBeforeSweep = db.getAllGames();
+  const pendingDates = Object.keys(allGamesBeforeSweep)
+    .filter(date => {
+      const games = allGamesBeforeSweep[date];
+      return games.some(g => g.result === 'pending') && date <= yesterday;
+    })
+    .sort();
 
-  // Update DB with results
-  if (scores.length > 0) {
-    db.updateResults(yesterday, scores);
+  let totalUpdated = 0;
+  for (const date of pendingDates) {
+    console.log(`Checking scores for ${date}...`);
+    const scores = await fetchYesterdayScores(date);
+    if (scores.length > 0) {
+      const updated = db.updateResults(date, scores);
+      totalUpdated += updated;
+      console.log(`  → Updated ${updated} results for ${date}`);
+    } else {
+      console.log(`  → No final scores found for ${date}`);
+    }
   }
+  console.log(`Total results updated across all dates: ${totalUpdated}`);
 
   // Load updated data
   const allGames = db.getAllGames();
