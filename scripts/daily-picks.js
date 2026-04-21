@@ -92,7 +92,7 @@ function poissonSample(lambda) {
   return Math.max(0, Math.round(lambda + z * Math.sqrt(lambda)));
 }
 
-function runMonteCarlo(homeStats, awayStats, weather, N = 10000000) {
+function runMonteCarlo(homeStats, awayStats, weather, umpFactor = 1.0, N = 10000000) {
   const lgAvgRPG = 4.5;
   const lgAvgHPG = 8.5;
   const lgAvgHRPG = 1.1;
@@ -136,9 +136,9 @@ function runMonteCarlo(homeStats, awayStats, weather, N = 10000000) {
   const tempFactor = temp < 50 ? 0.94 : temp < 60 ? 0.97 : temp > 85 ? 1.03 : 1.0;
 
   // Final run lambdas combining all factors
-  // Park factor is a venue effect — it inflates/suppresses runs for BOTH teams
-  const homeLambda = awayAllowedPerGame * homeOffFactor * homePlatoon * parkFactor * windFactor * tempFactor;
-  const awayLambda = homeAllowedPerGame * awayOffFactor * awayPlatoon * parkFactor * windFactor * tempFactor;
+  // Park factor + umpire factor are venue/game effects — they inflate/suppress runs for BOTH teams
+  const homeLambda = awayAllowedPerGame * homeOffFactor * homePlatoon * parkFactor * windFactor * tempFactor * umpFactor;
+  const awayLambda = homeAllowedPerGame * awayOffFactor * awayPlatoon * parkFactor * windFactor * tempFactor * umpFactor;
 
   // F5 = ~55% of game runs
   const homeF5L = homeLambda * 0.55;
@@ -224,7 +224,7 @@ async function fetchMLBSchedule() {
   const dateStr = today.toISOString().split('T')[0];
   try {
     const data = await httpsGet(
-      `https://${MLB_BASE}/api/v1/schedule?sportId=1&date=${dateStr}&hydrate=probablePitcher(stats),team,linescore,broadcasts,venue`
+      `https://${MLB_BASE}/api/v1/schedule?sportId=1&date=${dateStr}&hydrate=probablePitcher(stats),team,linescore,broadcasts,venue,officials`
     );
     return data.dates?.[0]?.games || [];
   } catch(e) {
@@ -339,6 +339,42 @@ async function fetchVenueInfo(venueId) {
   return { parkFactor: parkFactors[venueId] || 1.0 };
 }
 
+// ─── Umpire Run-Scoring Factors ──────────────────────────────────────────────
+// Home plate umpire zone size directly impacts run scoring. Wider zone = fewer
+// walks + more pitcher-friendly counts → fewer runs. Tight zone = opposite.
+// Factors are run-scoring multipliers relative to league average (1.00 = neutral).
+const UMPIRE_FACTORS = {
+  // Over umpires — historically bigger zones, more runs
+  "Hunter Wendelstedt": 1.052,
+  "Lance Barksdale": 1.048,
+  "Mark Ripperger": 1.041,
+  "Dan Iassogna": 1.037,
+  "Bill Miller": 1.034,
+  "Mike Estabrook": 1.031,
+  "Paul Nauert": 1.028,
+  "Jordan Baker": 1.025,
+  "Doug Eddings": 1.023,
+  "Alfonso Marquez": 1.020,
+  "Chad Whitson": 1.018,
+  "Jansen Visconti": 1.015,
+  // Under umpires — tighter zones, fewer runs
+  "Rob Drake": 0.962,
+  "Marty Foster": 0.968,
+  "Phil Cuzzi": 0.971,
+  "Brian Gorman": 0.974,
+  "Sean Barber": 0.979,
+  "Laz Diaz": 0.982,
+  "Pat Hoberg": 0.985,
+  "David Rackley": 0.986,
+  "Nic Lentz": 0.988,
+  "John Tumpane": 0.990,
+  "Tripp Gibson": 0.992,
+  "Adam Hamari": 0.993,
+};
+function getUmpireFactor(name) {
+  return UMPIRE_FACTORS[name] || 1.0;
+}
+
 // ─── Weather Fetch (open-meteo, no API key) ───────────────────────────────────
 const VENUE_COORDS = {
   // All 30 MLB venues — venue IDs from statsapi.mlb.com
@@ -414,7 +450,17 @@ async function buildGameData(games) {
     const awayTeamId = game.teams?.away?.team?.id;
     const venueId = game.venue?.id;
 
-    console.log(`  Fetching stats for ${game.teams?.away?.team?.name} @ ${game.teams?.home?.team?.name}...`);
+    // Extract home plate umpire
+    const officials = game.officials || [];
+    const homePlateUmpObj = officials.find(o =>
+      o.officialType === 'Home Plate' ||
+      o.officialType === 'Home Plate Umpire' ||
+      o.jobCode === 'HP'
+    );
+    const homePlateUmp = homePlateUmpObj?.official?.fullName || null;
+    const umpFactor = getUmpireFactor(homePlateUmp);
+
+    console.log(`  Fetching stats for ${game.teams?.away?.team?.name} @ ${game.teams?.home?.team?.name}${homePlateUmp ? ` (HP: ${homePlateUmp}, ${umpFactor.toFixed(3)}x)` : ''}...`);
 
     const [homePitcher, awayPitcher, homeTeam, awayTeam, venue] = await Promise.all([
       fetchPitcherStats(homePitcherId),
@@ -442,6 +488,8 @@ async function buildGameData(games) {
       venueId,
       gameTime: game.gameDate,
       weather,
+      homePlateUmp: homePlateUmp || 'TBD',
+      umpFactor,
       homePitcherName: game.teams?.home?.probablePitcher?.fullName || 'TBD',
       awayPitcherName: game.teams?.away?.probablePitcher?.fullName || 'TBD',
       homeStats: {
@@ -555,6 +603,8 @@ async function getAIReasoning(games, anthropicKey) {
     awayTeamStats: `RPG: ${g.awayStats.teamRPG?.toFixed(2)}, OBP: ${g.awayStats.teamOBP || 'N/A'}, SLG: ${g.awayStats.teamSLG || 'N/A'}`,
     venue: g.venue,
     parkFactor: g.homeStats.parkFactor,
+    homePlateUmp: g.homePlateUmp,
+    umpFactor: g.umpFactor,
     weather: g.weather,
     vegasOULine: g.vegasOULine,
     homeOdds: g.homeOdds,
@@ -565,11 +615,11 @@ async function getAIReasoning(games, anthropicKey) {
     evAboveThreshold: g.ev >= 4.5,
   }));
 
-  const prompt = `You are an expert MLB betting analyst. Using real MLB Stats API inputs and 10-million-simulation Monte Carlo results with platoon/weather/temperature adjustments, provide sharp 2-3 sentence reasoning for each game.
+  const prompt = `You are an expert MLB betting analyst. Using real MLB Stats API inputs and 10-million-simulation Monte Carlo results with platoon/weather/temperature/umpire adjustments, provide sharp 2-3 sentence reasoning for each game.
 
-Model factors applied: pitcher handedness platoon adjustments (batter advantage vs opposite-hand pitchers), wind speed/direction weather impact, temperature suppression, estimated FIP over raw ERA where available, bullpen ERA modeled separately, minimum +4.5% EV edge filter.
+Model factors applied: pitcher handedness platoon adjustments (batter advantage vs opposite-hand pitchers), wind speed/direction weather impact, temperature suppression, estimated FIP over raw ERA where available, bullpen ERA modeled separately, home plate umpire run-scoring tendency, minimum +4.5% EV edge filter.
 
-For each game cover: (1) key pitcher matchup including handedness advantage, (2) weather or park factor impact if significant, (3) actionable betting insight referencing sim probability vs Vegas implied odds.
+For each game cover: (1) key pitcher matchup including handedness advantage, (2) weather, park, or umpire impact if significant, (3) actionable betting insight referencing sim probability vs Vegas implied odds.
 
 GAMES:
 ${JSON.stringify(summary, null, 2)}
@@ -617,7 +667,7 @@ function calcConfidenceScore(sim, ourProb, impliedP, gamesPlayed) {
 }
 
 function analyzeGame(game) {
-  const sim = runMonteCarlo(game.homeStats, game.awayStats, game.weather);
+  const sim = runMonteCarlo(game.homeStats, game.awayStats, game.weather, game.umpFactor || 1.0);
 
   let pick, pickOdds, ourProb, impliedP, ev, kelly;
   const ho = game.homeOdds, ao = game.awayOdds;
@@ -698,6 +748,9 @@ function buildPicksEmail(analyzed, timeLabel, bankroll = 1000) {
       <div style="font-size:11px;color:#9ca3af;margin-top:2px">
         ⚾ ${g.awayPitcherName} (${g.awayStats.starterERA?.toFixed(2) || '—'} ERA) vs ${g.homePitcherName} (${g.homeStats.starterERA?.toFixed(2) || '—'} ERA)
       </div>
+      <div style="font-size:11px;color:#9ca3af;margin-top:1px">
+        🧑‍⚖️ HP: ${g.homePlateUmp || 'TBD'}${g.umpFactor !== 1.0 ? ` (${g.umpFactor > 1.0 ? '↑' : '↓'} ${g.umpFactor.toFixed(3)}x runs)` : ''}
+      </div>
     </div>
     <div style="text-align:right">
       <div style="font-size:22px;font-weight:800;color:${g.confidenceScore >= 70 ? '#16a34a' : g.confidenceScore >= 55 ? '#ca8a04' : '#dc2626'}">${g.confidenceScore}%</div>
@@ -776,7 +829,7 @@ function buildPicksEmail(analyzed, timeLabel, bankroll = 1000) {
     <div style="margin-top:10px;font-size:10px;color:#93c5fd">
       Inputs: Starter ERA ${g.awayStats.starterERA?.toFixed(2) || '—'} / ${g.homeStats.starterERA?.toFixed(2) || '—'} · 
       Bullpen ERA ${g.awayStats.bullpenERA?.toFixed(2) || '—'} / ${g.homeStats.bullpenERA?.toFixed(2) || '—'} · 
-      Park factor ${g.homeStats.parkFactor?.toFixed(2)}
+      Park ${g.homeStats.parkFactor?.toFixed(2)} · Ump ${g.umpFactor?.toFixed(3) || '1.000'}
     </div>
   </div>
 
@@ -811,7 +864,7 @@ function buildPicksEmail(analyzed, timeLabel, bankroll = 1000) {
   ${cards}
 
   <div style="text-align:center;color:#9ca3af;font-size:11px;padding:16px;line-height:1.8">
-    Powered by MLB Stats API · 10M Poisson simulations · Platoon + weather adjusted · Kelly capped at 25%<br>
+    Powered by MLB Stats API · 10M Poisson simulations · Platoon + weather + umpire adjusted · Kelly capped at 25%<br>
     For informational use only · Bet responsibly
   </div>
 </div>
@@ -829,6 +882,7 @@ function savePicks(analyzed, dataDir) {
     commence_time: g.commence_time || g.gameTime,
     pick: g.pick, pick_odds: g.pickOdds, ev: g.ev, kelly: g.kelly,
     sim_home_win_pct: g.sim?.homeWinPct, sim_away_win_pct: g.sim?.awayWinPct,
+    home_plate_ump: g.homePlateUmp || null, ump_factor: g.umpFactor ?? null,
   }));
   existing.sent_at = [...(existing.sent_at || []), new Date().toISOString()];
   fs.writeFileSync(file, JSON.stringify(existing, null, 2));
