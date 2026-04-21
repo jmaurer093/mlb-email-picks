@@ -5,15 +5,15 @@
     "start_date": "2026-03-30"
   },
   "season_stats": {
-    "wins": 34,
-    "losses": 21,
+    "wins": 39,
+    "losses": 26,
     "pushes": 0,
-    "pending": 10,
-    "profit": 115.24,
-    "total_wagered": 6765.4,
-    "roi": 1.7,
-    "win_pct": 61.8,
-    "record": "34-21"
+    "pending": 15,
+    "profit": 38.59,
+    "total_wagered": 8552.7,
+    "roi": 0.45,
+    "win_pct": 60,
+    "record": "39-26"
   },
   "games": {
     "2026-04-16": [
@@ -1587,11 +1587,11 @@
         "away_pitcher": "Bryce Elder",
         "home_era": 6.16,
         "away_era": 0.77,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-20T22:47:13.006Z"
+        "result": "W",
+        "home_score": 4,
+        "away_score": 9,
+        "final_result_str": "Atlanta Braves 9, Washington Nationals 4",
+        "updated_at": "2026-04-21T15:15:49.174Z"
       },
       {
         "date": "2026-04-20",
@@ -1615,11 +1615,11 @@
         "away_pitcher": "Justin Wrobleski",
         "home_era": 5.63,
         "away_era": 2.12,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-20T22:47:13.006Z"
+        "result": "W",
+        "home_score": 3,
+        "away_score": 12,
+        "final_result_str": "Los Angeles Dodgers 12, Colorado Rockies 3",
+        "updated_at": "2026-04-21T15:15:49.174Z"
       },
       {
         "date": "2026-04-20",
@@ -1643,11 +1643,11 @@
         "away_pitcher": "Aaron Nola",
         "home_era": 3.63,
         "away_era": 4.03,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-20T22:47:13.006Z"
+        "result": "W",
+        "home_score": 5,
+        "away_score": 1,
+        "final_result_str": "Philadelphia Phillies 1, Chicago Cubs 5",
+        "updated_at": "2026-04-21T15:15:49.174Z"
       },
       {
         "date": "2026-04-20",
@@ -1671,11 +1671,11 @@
         "away_pitcher": "Spencer Arrighetti",
         "home_era": 5.4,
         "away_era": 2.57,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-20T22:47:13.006Z"
+        "result": "W",
+        "home_score": 2,
+        "away_score": 9,
+        "final_result_str": "Houston Astros 9, Cleveland Guardians 2",
+        "updated_at": "2026-04-21T15:15:49.174Z"
       },
       {
         "date": "2026-04-20",
@@ -1699,11 +1699,11 @@
         "away_pitcher": "J.T. Ginn",
         "home_era": 2.28,
         "away_era": 3.31,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-20T22:47:13.006Z"
+        "result": "L",
+        "home_score": 4,
+        "away_score": 6,
+        "final_result_str": "Athletics 6, Seattle Mariners 4",
+        "updated_at": "2026-04-21T15:15:49.174Z"
       },
       {
         "date": "2026-04-20",
@@ -1727,11 +1727,11 @@
         "away_pitcher": "Kyle Bradish",
         "home_era": 1.48,
         "away_era": 5.49,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-20T22:47:13.006Z"
+        "result": "L",
+        "home_score": 5,
+        "away_score": 7,
+        "final_result_str": "Baltimore Orioles 7, Kansas City Royals 5",
+        "updated_at": "2026-04-21T15:15:49.174Z"
       },
       {
         "date": "2026-04-20",
@@ -1755,11 +1755,11 @@
         "away_pitcher": "Michael McGreevy",
         "home_era": 3.98,
         "away_era": 2.49,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-20T22:47:13.006Z"
+        "result": "L",
+        "home_score": 5,
+        "away_score": 3,
+        "final_result_str": "St. Louis Cardinals 3, Miami Marlins 5",
+        "updated_at": "2026-04-21T15:15:49.174Z"
       },
       {
         "date": "2026-04-20",
@@ -1783,11 +1783,11 @@
         "away_pitcher": "Dylan Cease",
         "home_era": 3.57,
         "away_era": 1.74,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-20T22:47:13.006Z"
+        "result": "W",
+        "home_score": 2,
+        "away_score": 5,
+        "final_result_str": "Toronto Blue Jays 5, Los Angeles Angels 2",
+        "updated_at": "2026-04-21T15:15:49.174Z"
       },
       {
         "date": "2026-04-20",
@@ -1811,11 +1811,11 @@
         "away_pitcher": "Jack Flaherty",
         "home_era": 4.3,
         "away_era": 3.47,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-20T16:53:50.514Z"
+        "result": "L",
+        "home_score": 8,
+        "away_score": 6,
+        "final_result_str": "Detroit Tigers 6, Boston Red Sox 8",
+        "updated_at": "2026-04-21T15:15:49.174Z"
       },
       {
         "date": "2026-04-20",
@@ -1839,11 +1839,11 @@
         "away_pitcher": "Rhett Lowder",
         "home_era": 0,
         "away_era": 3.52,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-20T22:47:13.006Z"
+        "result": "L",
+        "home_score": 1,
+        "away_score": 6,
+        "final_result_str": "Cincinnati Reds 6, Tampa Bay Rays 1",
+        "updated_at": "2026-04-21T15:15:49.174Z"
       }
     ],
     "2026-04-21": [
