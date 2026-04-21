@@ -110,12 +110,22 @@ function updateResults(date, scores) {
 }
 
 function findScore(game, scores) {
+  // Try two-word match first (e.g. "Red Sox", "Blue Jays") — prevents Sox/Sox confusion
   for (const s of scores) {
-    const homeMatch = s.home?.includes(game.home_team?.split(' ').pop()) ||
-                      game.home_team?.includes(s.home?.split(' ').pop());
-    const awayMatch = s.away?.includes(game.away_team?.split(' ').pop()) ||
-                      game.away_team?.includes(s.away?.split(' ').pop());
-    if (homeMatch && awayMatch) return s;
+    const homeKey = game.home_team?.split(' ').slice(-2).join(' ').toLowerCase();
+    const awayKey = game.away_team?.split(' ').slice(-2).join(' ').toLowerCase();
+    const sHome = s.home?.toLowerCase() || '';
+    const sAway = s.away?.toLowerCase() || '';
+    if (sHome.includes(homeKey) && sAway.includes(awayKey)) return s;
+    if (homeKey && sHome.includes(homeKey) && awayKey && sAway.includes(awayKey)) return s;
+  }
+  // Fallback: single last word, but require BOTH to match
+  for (const s of scores) {
+    const homeLast = game.home_team?.split(' ').pop()?.toLowerCase();
+    const awayLast = game.away_team?.split(' ').pop()?.toLowerCase();
+    const sHome = s.home?.toLowerCase() || '';
+    const sAway = s.away?.toLowerCase() || '';
+    if (homeLast && awayLast && sHome.includes(homeLast) && sAway.includes(awayLast)) return s;
   }
   return null;
 }
