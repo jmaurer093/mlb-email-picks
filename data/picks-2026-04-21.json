@@ -7,32 +7,38 @@
       "commence_time": "2:20 PM ET",
       "pick": "Chicago Cubs",
       "pick_odds": -126,
-      "ev": 72.15460317460315,
+      "ev": 72.17253968253968,
       "kelly": 25,
-      "sim_home_win_pct": 95.98,
-      "sim_away_win_pct": 1.85
+      "sim_home_win_pct": 95.99,
+      "sim_away_win_pct": 1.84,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
     },
     {
       "home_team": "Cleveland Guardians",
       "away_team": "Houston Astros",
-      "commence_time": "1:10 PM ET",
+      "commence_time": "7:10 PM ET",
       "pick": "Cleveland Guardians",
-      "pick_odds": -144,
-      "ev": 36.097777777777765,
+      "pick_odds": -154,
+      "ev": 32.44285714285713,
       "kelly": 25,
-      "sim_home_win_pct": 80.32,
-      "sim_away_win_pct": 11.45
+      "sim_home_win_pct": 80.3,
+      "sim_away_win_pct": 11.46,
+      "home_plate_ump": "Derek Thomas",
+      "ump_factor": 1
     },
     {
       "home_team": "San Francisco Giants",
       "away_team": "Los Angeles Dodgers",
-      "commence_time": "4:05 PM ET",
+      "commence_time": "10:15 PM ET",
       "pick": "Los Angeles Dodgers",
       "pick_odds": -180,
-      "ev": 18.766666666666666,
+      "ev": 18.78222222222221,
       "kelly": 25,
-      "sim_home_win_pct": 13.05,
-      "sim_away_win_pct": 76.35
+      "sim_home_win_pct": 13.04,
+      "sim_away_win_pct": 76.36,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
     },
     {
       "home_team": "Texas Rangers",
@@ -42,19 +48,23 @@
       "pick_odds": -104,
       "ev": 49.135769230769235,
       "kelly": 25,
-      "sim_home_win_pct": 13.34,
-      "sim_away_win_pct": 76.03
+      "sim_home_win_pct": 13.33,
+      "sim_away_win_pct": 76.03,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
     },
     {
       "home_team": "Washington Nationals",
       "away_team": "Atlanta Braves",
       "commence_time": "7:05 PM ET",
       "pick": "Atlanta Braves",
-      "pick_odds": -154,
-      "ev": 21.09532467532467,
+      "pick_odds": -156,
+      "ev": 19.975384615384616,
       "kelly": 25,
-      "sim_home_win_pct": 15.84,
-      "sim_away_win_pct": 73.42
+      "sim_home_win_pct": 15.98,
+      "sim_away_win_pct": 73.11,
+      "home_plate_ump": "Laz Diaz",
+      "ump_factor": 0.982
     },
     {
       "home_team": "Arizona Diamondbacks",
@@ -62,10 +72,12 @@
       "commence_time": "9:40 PM ET",
       "pick": "Arizona Diamondbacks",
       "pick_odds": -152,
-      "ev": 8.310263157894738,
-      "kelly": 12.631599999999999,
-      "sim_home_win_pct": 65.33,
-      "sim_away_win_pct": 22.28
+      "ev": 8.343421052631573,
+      "kelly": 12.681999999999988,
+      "sim_home_win_pct": 65.35,
+      "sim_away_win_pct": 22.27,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
     },
     {
       "home_team": "Los Angeles Angels",
@@ -73,10 +85,12 @@
       "commence_time": "10:07 PM ET",
       "pick": "Los Angeles Angels",
       "pick_odds": -112,
-      "ev": 27.540714285714273,
+      "ev": 27.50285714285714,
       "kelly": 25,
-      "sim_home_win_pct": 67.38,
-      "sim_away_win_pct": 21.07
+      "sim_home_win_pct": 67.36,
+      "sim_away_win_pct": 21.07,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
     },
     {
       "home_team": "Boston Red Sox",
@@ -84,10 +98,12 @@
       "commence_time": "7:10 PM ET",
       "pick": "Boston Red Sox",
       "pick_odds": -122,
-      "ev": 13.292786885245889,
-      "kelly": 16.217199999999984,
-      "sim_home_win_pct": 62.26,
-      "sim_away_win_pct": 25.47
+      "ev": 13.238196721311478,
+      "kelly": 16.150600000000004,
+      "sim_home_win_pct": 62.23,
+      "sim_away_win_pct": 25.51,
+      "home_plate_ump": "Austin Jones",
+      "ump_factor": 1
     },
     {
       "home_team": "Miami Marlins",
@@ -95,10 +111,12 @@
       "commence_time": "2026-04-21T22:40:00Z",
       "pick": "Miami Marlins",
       "pick_odds": -116,
-      "ev": 1.538620689655179,
-      "kelly": 1.784800000000008,
-      "sim_home_win_pct": 54.53,
-      "sim_away_win_pct": 34.04
+      "ev": 1.557241379310348,
+      "kelly": 1.8064000000000038,
+      "sim_home_win_pct": 54.54,
+      "sim_away_win_pct": 34.01,
+      "home_plate_ump": "Manny Gonzalez",
+      "ump_factor": 1
     },
     {
       "home_team": "Kansas City Royals",
@@ -106,10 +124,12 @@
       "commence_time": "8:10 PM ET",
       "pick": "Baltimore Orioles",
       "pick_odds": 106,
-      "ev": 12.002199999999984,
-      "kelly": 11.32283018867923,
-      "sim_home_win_pct": 31.39,
-      "sim_away_win_pct": 54.37
+      "ev": 11.919800000000013,
+      "kelly": 11.245094339622653,
+      "sim_home_win_pct": 31.42,
+      "sim_away_win_pct": 54.33,
+      "home_plate_ump": "Brock Ballou",
+      "ump_factor": 1
     },
     {
       "home_team": "Tampa Bay Rays",
@@ -117,10 +137,12 @@
       "commence_time": "2026-04-21T22:40:00Z",
       "pick": "Cincinnati Reds",
       "pick_odds": -116,
-      "ev": -8.777241379310352,
+      "ev": -8.888965517241376,
       "kelly": 0,
-      "sim_home_win_pct": 35.23,
-      "sim_away_win_pct": 48.99
+      "sim_home_win_pct": 35.22,
+      "sim_away_win_pct": 48.93,
+      "home_plate_ump": "Tripp Gibson",
+      "ump_factor": 0.992
     },
     {
       "home_team": "Detroit Tigers",
@@ -128,10 +150,12 @@
       "commence_time": "2026-04-21T22:40:00Z",
       "pick": "Milwaukee Brewers",
       "pick_odds": -104,
-      "ev": -4.021923076923073,
+      "ev": -3.9434615384615346,
       "kelly": 0,
       "sim_home_win_pct": 36.51,
-      "sim_away_win_pct": 48.93
+      "sim_away_win_pct": 48.97,
+      "home_plate_ump": "Emil Jimenez",
+      "ump_factor": 1
     },
     {
       "home_team": "Seattle Mariners",
@@ -139,10 +163,12 @@
       "commence_time": "2026-04-22T01:40:00Z",
       "pick": "Seattle Mariners",
       "pick_odds": -166,
-      "ev": -13.854457831325306,
+      "ev": -13.966626506024117,
       "kelly": 0,
-      "sim_home_win_pct": 53.76,
-      "sim_away_win_pct": 33.31
+      "sim_home_win_pct": 53.69,
+      "sim_away_win_pct": 33.35,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
     },
     {
       "home_team": "New York Mets",
@@ -150,10 +176,12 @@
       "commence_time": "2026-04-21T23:10:00Z",
       "pick": "New York Mets",
       "pick_odds": -162,
-      "ev": -20.769259259259254,
+      "ev": -20.801604938271613,
       "kelly": 0,
-      "sim_home_win_pct": 48.99,
-      "sim_away_win_pct": 36.2
+      "sim_home_win_pct": 48.97,
+      "sim_away_win_pct": 36.23,
+      "home_plate_ump": "Ryan Additon",
+      "ump_factor": 1
     },
     {
       "home_team": "Colorado Rockies",
@@ -161,15 +189,18 @@
       "commence_time": "2026-04-22T00:40:00Z",
       "pick": "San Diego Padres",
       "pick_odds": -146,
-      "ev": -17.33726027397259,
+      "ev": -17.303561643835618,
       "kelly": 0,
       "sim_home_win_pct": 33.67,
-      "sim_away_win_pct": 49.06
+      "sim_away_win_pct": 49.08,
+      "home_plate_ump": "Alex MacKay",
+      "ump_factor": 1
     }
   ],
   "sent_at": [
     "2026-04-21T14:30:16.768Z",
     "2026-04-21T16:48:57.712Z",
-    "2026-04-21T19:04:33.900Z"
+    "2026-04-21T19:04:33.900Z",
+    "2026-04-21T19:57:05.246Z"
   ]
 }
