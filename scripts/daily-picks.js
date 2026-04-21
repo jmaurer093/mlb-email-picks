@@ -48,11 +48,7 @@ function fmtOdds(o) { return o > 0 ? `+${o}` : `${o}`; }
 function dec(o) { return o > 0 ? o / 100 + 1 : 100 / Math.abs(o) + 1; }
 function impliedProb(o) { return o > 0 ? 100 / (o + 100) : Math.abs(o) / (Math.abs(o) + 100); }
 function getTimeLabel() {
-  // Compute ET hour properly (handles DST automatically)
-  const etHour = parseInt(new Date().toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/New_York' }));
-  if (etHour >= 10 && etHour < 14) return 'Noon';
-  if (etHour >= 14 && etHour < 17) return '3 PM';
-  return '6 PM';
+  return 'Noon';
 }
 function todayStr() { return new Date().toISOString().split('T')[0]; }
 function ensureDataDir() {
@@ -506,13 +502,33 @@ async function fetchOdds(oddsKey) {
 }
 
 function matchOdds(game, oddsData) {
+  // Try two-word match first (prevents "Red Sox" vs "White Sox" confusion)
   for (const o of oddsData) {
-    if (
-      (o.home_team?.includes(game.homeTeam?.split(' ').pop()) ||
-       game.homeTeam?.includes(o.home_team?.split(' ').pop())) &&
-      (o.away_team?.includes(game.awayTeam?.split(' ').pop()) ||
-       game.awayTeam?.includes(o.away_team?.split(' ').pop()))
-    ) {
+    const homeKey = game.homeTeam?.split(' ').slice(-2).join(' ').toLowerCase();
+    const awayKey = game.awayTeam?.split(' ').slice(-2).join(' ').toLowerCase();
+    const oHome = o.home_team?.toLowerCase() || '';
+    const oAway = o.away_team?.toLowerCase() || '';
+    if (oHome.includes(homeKey) && oAway.includes(awayKey)) {
+      const bm = o.bookmakers?.find(b => b.key === 'fanduel') ||
+                 o.bookmakers?.find(b => b.key === 'draftkings') ||
+                 o.bookmakers?.[0];
+      const h2h = bm?.markets?.find(m => m.key === 'h2h');
+      const totals = bm?.markets?.find(m => m.key === 'totals');
+      return {
+        homeOdds: h2h?.outcomes?.find(out => out.name === o.home_team)?.price,
+        awayOdds: h2h?.outcomes?.find(out => out.name === o.away_team)?.price,
+        ouLine: totals?.outcomes?.[0]?.point,
+        bookmaker: bm?.title || 'Unknown',
+      };
+    }
+  }
+  // Fallback: single last word, require BOTH match
+  for (const o of oddsData) {
+    const homeLast = game.homeTeam?.split(' ').pop()?.toLowerCase();
+    const awayLast = game.awayTeam?.split(' ').pop()?.toLowerCase();
+    const oHome = o.home_team?.toLowerCase() || '';
+    const oAway = o.away_team?.toLowerCase() || '';
+    if (homeLast && awayLast && oHome.includes(homeLast) && oAway.includes(awayLast)) {
       const bm = o.bookmakers?.find(b => b.key === 'fanduel') ||
                  o.bookmakers?.find(b => b.key === 'draftkings') ||
                  o.bookmakers?.[0];
