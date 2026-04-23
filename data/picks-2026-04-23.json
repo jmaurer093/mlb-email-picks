@@ -1,0 +1,125 @@
+{
+  "date": "2026-04-23",
+  "games": [
+    {
+      "home_team": "San Francisco Giants",
+      "away_team": "Los Angeles Dodgers",
+      "commence_time": "10:15 PM ET",
+      "pick": "Los Angeles Dodgers",
+      "pick_odds": -162,
+      "ev": 36.64432098765433,
+      "kelly": 25,
+      "sim_home_win_pct": 8.57,
+      "sim_away_win_pct": 84.49,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Colorado Rockies",
+      "away_team": "San Diego Padres",
+      "commence_time": "8:40 PM ET",
+      "pick": "Colorado Rockies",
+      "pick_odds": 134,
+      "ev": 95.4836,
+      "kelly": 25,
+      "sim_home_win_pct": 83.54,
+      "sim_away_win_pct": 10.44,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Boston Red Sox",
+      "away_team": "New York Yankees",
+      "commence_time": "7:10 PM ET",
+      "pick": "New York Yankees",
+      "pick_odds": -154,
+      "ev": 33.432467532467534,
+      "kelly": 25,
+      "sim_home_win_pct": 10.05,
+      "sim_away_win_pct": 80.9,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Detroit Tigers",
+      "away_team": "Milwaukee Brewers",
+      "commence_time": "6:40 PM ET",
+      "pick": "Detroit Tigers",
+      "pick_odds": -225,
+      "ev": 6.238888888888883,
+      "kelly": 14.037499999999985,
+      "sim_home_win_pct": 73.55,
+      "sim_away_win_pct": 16.63,
+      "home_plate_ump": "Gabe Morales",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "New York Mets",
+      "away_team": "Minnesota Twins",
+      "commence_time": "7:10 PM ET",
+      "pick": "Minnesota Twins",
+      "pick_odds": -110,
+      "ev": 35.54545454545455,
+      "kelly": 25,
+      "sim_home_win_pct": 17.33,
+      "sim_away_win_pct": 71,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Chicago Cubs",
+      "away_team": "Philadelphia Phillies",
+      "commence_time": "8:05 PM ET",
+      "pick": "Chicago Cubs",
+      "pick_odds": 104,
+      "ev": 37.23079999999999,
+      "kelly": 25,
+      "sim_home_win_pct": 67.27,
+      "sim_away_win_pct": 19.03,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Washington Nationals",
+      "away_team": "Atlanta Braves",
+      "commence_time": "7:05 PM ET",
+      "pick": "Atlanta Braves",
+      "pick_odds": -134,
+      "ev": 0.6723880597014897,
+      "kelly": 0.9009999999999962,
+      "sim_home_win_pct": 30.54,
+      "sim_away_win_pct": 57.65,
+      "home_plate_ump": "Chris Segal",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Texas Rangers",
+      "away_team": "Pittsburgh Pirates",
+      "commence_time": "8:05 PM ET",
+      "pick": "Pittsburgh Pirates",
+      "pick_odds": 136,
+      "ev": 5.374000000000012,
+      "kelly": 3.9514705882353023,
+      "sim_home_win_pct": 39.2,
+      "sim_away_win_pct": 44.65,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Arizona Diamondbacks",
+      "away_team": "Chicago White Sox",
+      "commence_time": "9:40 PM ET",
+      "pick": "Arizona Diamondbacks",
+      "pick_odds": -156,
+      "ev": -21.296410256410258,
+      "kelly": 0,
+      "sim_home_win_pct": 47.96,
+      "sim_away_win_pct": 36.77,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    }
+  ],
+  "sent_at": [
+    "2026-04-23T15:07:10.377Z"
+  ]
+}
