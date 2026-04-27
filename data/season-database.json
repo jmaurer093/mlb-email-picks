@@ -5,15 +5,15 @@
     "start_date": "2026-03-30"
   },
   "season_stats": {
-    "wins": 76,
+    "wins": 77,
     "losses": 70,
     "pushes": 0,
-    "pending": 1,
-    "profit": -2032.93,
-    "total_wagered": 19035,
-    "roi": -10.68,
-    "win_pct": 52.1,
-    "record": "76-70"
+    "pending": 0,
+    "profit": -1928.18,
+    "total_wagered": 19160.7,
+    "roi": -10.06,
+    "win_pct": 52.4,
+    "record": "77-70"
   },
   "games": {
     "2026-04-16": [
@@ -4041,11 +4041,11 @@
         "away_era": 4.08,
         "home_plate_ump": "Alex MacKay",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-04-26T16:49:03.897Z"
+        "result": "W",
+        "home_score": 11,
+        "away_score": 9,
+        "final_result_str": "Los Angeles Angels 9, Kansas City Royals 11",
+        "updated_at": "2026-04-27T14:25:24.834Z"
       },
       {
         "date": "2026-04-26",
