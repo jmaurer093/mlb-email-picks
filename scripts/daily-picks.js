@@ -97,32 +97,90 @@ function runMonteCarlo(homeStats, awayStats, weather, umpFactor = 1.0, N = 10000
   const lgAvgHPG = 8.5;
   const lgAvgHRPG = 1.1;
   const lgAvgKPG = 8.5;
+  const lgAvgERA = 4.20;
+  const lgAvgOBP = 0.320;
+  const lgAvgSLG = 0.400;
 
-  // Expected runs per game using FIP-like approach
-  // Starter covers ~5.5 innings, bullpen ~3.5
-  const starterIP = 5.5;
-  const bullpenIP = 3.5;
+  // ─── PITCHING-FIRST RUN MODEL ─────────────────────────────────────────────
+  // Starter covers ~6.0 innings (up from 5.5) — emphasizes starter quality
+  // Bullpen covers ~3.0 innings, with fatigue multiplier on top
+  const starterIP = 6.0;
+  const bullpenIP = 3.0;
 
-  const homeStarterRuns = (safeNum(homeStats.starterERA, 4.20) / 9) * starterIP;
-  const homeBullpenRuns = (safeNum(homeStats.bullpenERA, 4.00) / 9) * bullpenIP;
-  const homeAllowedPerGame = homeStarterRuns + homeBullpenRuns;
+  // Pitcher quality is the PRIMARY input. Use ERA² scaling so elite pitchers
+  // (ERA < 3.00) suppress runs more aggressively, and bad pitchers (ERA > 5.00)
+  // give up more — this matches reality where pitcher quality is non-linear.
+  const homeStarterRunRate = safeNum(homeStats.starterERA, lgAvgERA) / 9;
+  const awayStarterRunRate = safeNum(awayStats.starterERA, lgAvgERA) / 9;
 
-  const awayStarterRuns = (safeNum(awayStats.starterERA, 4.20) / 9) * starterIP;
-  const awayBullpenRuns = (safeNum(awayStats.bullpenERA, 4.00) / 9) * bullpenIP;
-  const awayAllowedPerGame = awayStarterRuns + awayBullpenRuns;
+  // Apply bullpen fatigue (1.00–1.18 multiplier based on recent IP)
+  const homeBpFatigue = safeNum(homeStats.bullpenFatigue, 1.0);
+  const awayBpFatigue = safeNum(awayStats.bullpenFatigue, 1.0);
+  const homeBullpenRate = (safeNum(homeStats.bullpenERA, 4.30) / 9) * homeBpFatigue;
+  const awayBullpenRate = (safeNum(awayStats.bullpenERA, 4.30) / 9) * awayBpFatigue;
 
-  // Offensive factor relative to league avg
-  const homeOffFactor = safeNum(homeStats.teamRPG, lgAvgRPG) / lgAvgRPG;
-  const awayOffFactor = safeNum(awayStats.teamRPG, lgAvgRPG) / lgAvgRPG;
+  // Pitcher rest day adjustment — short rest = inflated runs, long rest = slight bump
+  const restAdj = (days) => {
+    if (days === null || days === undefined) return 1.0;
+    if (days <= 3) return 1.06;   // short rest, fatigued
+    if (days === 4) return 1.00;  // standard rest
+    if (days === 5) return 0.99;  // optimal
+    if (days >= 6 && days <= 10) return 1.00;
+    if (days > 10) return 1.04;   // rust factor
+    return 1.0;
+  };
+  const homeStarterRestAdj = restAdj(homeStats.starterRestDays);
+  const awayStarterRestAdj = restAdj(awayStats.starterRestDays);
 
-  // Park factor adjustment
+  // Pitcher workload trend — heavy recent pitch counts indicate fatigue building
+  const workloadAdj = (avgPitches) => {
+    if (!avgPitches) return 1.0;
+    if (avgPitches >= 105) return 1.04; // overworked
+    if (avgPitches >= 95) return 1.01;
+    if (avgPitches < 80) return 0.98;   // light workload, fresh
+    return 1.0;
+  };
+  const homeStarterWorkload = workloadAdj(homeStats.starterAvgPitches);
+  const awayStarterWorkload = workloadAdj(awayStats.starterAvgPitches);
+
+  // Combined pitching expected runs allowed
+  const homeAllowedPerGame =
+    homeStarterRunRate * starterIP * homeStarterRestAdj * homeStarterWorkload +
+    homeBullpenRate * bullpenIP;
+  const awayAllowedPerGame =
+    awayStarterRunRate * starterIP * awayStarterRestAdj * awayStarterWorkload +
+    awayBullpenRate * bullpenIP;
+
+  // ─── OFFENSE — secondary input, dampened ──────────────────────────────────
+  // Sub-linear scaling (^0.7) caps offense's ability to override pitcher dominance.
+  // A team scoring 5.0 RPG vs league 4.5 (factor 1.11) becomes 1.077 after damping —
+  // meaningful but no longer outweighs a strong starter.
+  const homeRPG = safeNum(homeStats.teamRPG, lgAvgRPG);
+  const awayRPG = safeNum(awayStats.teamRPG, lgAvgRPG);
+  const homeOffFactor = Math.pow(homeRPG / lgAvgRPG, 0.7);
+  const awayOffFactor = Math.pow(awayRPG / lgAvgRPG, 0.7);
+
+  // Recent form (last 14 days) — blended in at 25% to capture momentum without
+  // overweighting small samples.
+  const homeRecent = safeNum(homeStats.recent14RPG, homeRPG);
+  const awayRecent = safeNum(awayStats.recent14RPG, awayRPG);
+  const homeFormBlend = homeRPG * 0.75 + homeRecent * 0.25;
+  const awayFormBlend = awayRPG * 0.75 + awayRecent * 0.25;
+  const homeFormFactor = Math.pow(homeFormBlend / lgAvgRPG, 0.7);
+  const awayFormFactor = Math.pow(awayFormBlend / lgAvgRPG, 0.7);
+
+  // Day-after-night fatigue — well-documented ~3-4% offensive suppression
+  const homeDanFactor = homeStats.dayAfterNight ? 0.965 : 1.0;
+  const awayDanFactor = awayStats.dayAfterNight ? 0.965 : 1.0;
+
+  // Park factor (venue effect — both teams)
   const parkFactor = safeNum(homeStats.parkFactor, 1.0);
 
-  // Platoon adjustment — accounts for batter/pitcher handedness matchups
+  // Platoon adjustment (handedness)
   const homePlatoon = getPlatoonMultiplier(awayStats.starterThrows || 'R', homeStats.teamOBP, homeStats.teamSLG);
   const awayPlatoon = getPlatoonMultiplier(homeStats.starterThrows || 'R', awayStats.teamOBP, awayStats.teamSLG);
 
-  // Weather adjustment — wind blowing out inflates offense, wind in suppresses it
+  // Weather
   const windSpeed = weather?.windSpeed || 8;
   const windDir = weather?.windDir || 'neutral';
   const windFactor = windDir === 'out' && windSpeed > 10
@@ -130,15 +188,24 @@ function runMonteCarlo(homeStats, awayStats, weather, umpFactor = 1.0, N = 10000
     : windDir === 'in' && windSpeed > 10
       ? 1.0 - Math.min(0.10, (windSpeed - 10) * 0.007)
       : 1.0;
-
-  // Temperature adjustment — cold weather suppresses offense
   const temp = weather?.temp || 72;
   const tempFactor = temp < 50 ? 0.94 : temp < 60 ? 0.97 : temp > 85 ? 1.03 : 1.0;
 
-  // Final run lambdas combining all factors
-  // Park factor + umpire factor are venue/game effects — they inflate/suppress runs for BOTH teams
-  const homeLambda = awayAllowedPerGame * homeOffFactor * homePlatoon * parkFactor * windFactor * tempFactor * umpFactor;
-  const awayLambda = homeAllowedPerGame * awayOffFactor * awayPlatoon * parkFactor * windFactor * tempFactor * umpFactor;
+  // ─── FINAL LAMBDAS ────────────────────────────────────────────────────────
+  // Pitching expected runs (against) is the BASE. Offense factors adjust on top.
+  const homeLambda =
+    awayAllowedPerGame *           // opposing pitching is primary
+    homeFormFactor *               // home offense (dampened, recency-blended)
+    homePlatoon *                  // handedness
+    homeDanFactor *                // day-after-night fatigue
+    parkFactor * windFactor * tempFactor * umpFactor;
+
+  const awayLambda =
+    homeAllowedPerGame *
+    awayFormFactor *
+    awayPlatoon *
+    awayDanFactor *
+    parkFactor * windFactor * tempFactor * umpFactor;
 
   // F5 = ~55% of game runs
   const homeF5L = homeLambda * 0.55;
@@ -233,19 +300,19 @@ async function fetchMLBSchedule() {
   }
 }
 
-async function fetchPitcherStats(personId) {
+async function fetchPitcherStats(personId, gameDate = null) {
   if (!personId) return {};
   try {
-    const [season, last30, info] = await Promise.all([
+    const [season, last30, info, gameLog] = await Promise.all([
       httpsGet(`https://${MLB_BASE}/api/v1/people/${personId}/stats?stats=season&group=pitching&season=2026`),
       httpsGet(`https://${MLB_BASE}/api/v1/people/${personId}/stats?stats=lastXGames&group=pitching&season=2026&limit=7`),
-      httpsGet(`https://${MLB_BASE}/api/v1/people/${personId}`)
+      httpsGet(`https://${MLB_BASE}/api/v1/people/${personId}`),
+      httpsGet(`https://${MLB_BASE}/api/v1/people/${personId}/stats?stats=gameLog&group=pitching&season=2026`).catch(() => ({}))
     ]);
     const s = season.stats?.[0]?.splits?.[0]?.stat || {};
     const r = last30.stats?.[0]?.splits?.[0]?.stat || {};
     const hand = info.people?.[0]?.pitchHand?.code || 'R';
-    // MLB Stats API does NOT return xFIP/SIERA — build a FIP estimate from K, BB, HR rates
-    // FIP = ((13*HR9 + 3*BB9 - 2*K9) / 9 + constant) * 9; constant ≈ 3.10 (league avg)
+    // FIP estimate from K, BB, HR rates (MLB API does not return xFIP/SIERA)
     const k9 = safeNum(s.strikeoutsPer9Inn, null);
     const bb9 = safeNum(s.walksPer9Inn, null);
     const hr9 = safeNum(s.homeRunsPer9, null);
@@ -254,8 +321,32 @@ async function fetchPitcherStats(personId) {
     if (k9 !== null && bb9 !== null && hr9 !== null) {
       estFIP = +((13 * hr9 + 3 * bb9 - 2 * k9 + 3.10 * 9) / 9).toFixed(2);
     }
-    // Best ERA estimate: prefer FIP > season ERA (FIP strips defense/luck)
     const bestERA = estFIP ?? era;
+
+    // Rest days + recent pitch count from game log
+    let restDays = null;
+    let avgPitchCount = null;
+    let lastStartIP = null;
+    const splits = gameLog.stats?.[0]?.splits || [];
+    if (splits.length > 0 && gameDate) {
+      // Find most recent start before today
+      const sorted = splits
+        .filter(g => g.stat?.gamesStarted >= 1 || parseFloat(g.stat?.inningsPitched || '0') >= 3)
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      if (sorted.length > 0) {
+        const lastDate = sorted[0].date;
+        if (lastDate) {
+          const ms = new Date(gameDate).getTime() - new Date(lastDate).getTime();
+          restDays = Math.floor(ms / (1000 * 60 * 60 * 24));
+        }
+        lastStartIP = parseFloat(sorted[0].stat?.inningsPitched || '0');
+      }
+      // Average pitches across last 3 starts (proxy for workload trend)
+      const last3 = sorted.slice(0, 3);
+      const pitches = last3.map(g => safeNum(g.stat?.numberOfPitches, 0)).filter(p => p > 0);
+      if (pitches.length > 0) avgPitchCount = pitches.reduce((a, b) => a + b, 0) / pitches.length;
+    }
+
     return {
       era,
       bestERA,
@@ -268,6 +359,9 @@ async function fetchPitcherStats(personId) {
       recentERA: safeNum(r.era, null),
       recentWHIP: safeNum(r.whip, null),
       throws: hand,
+      restDays,
+      avgPitchCount,
+      lastStartIP,
     };
   } catch(e) {
     return {};
@@ -277,13 +371,27 @@ async function fetchPitcherStats(personId) {
 async function fetchTeamStats(teamId) {
   if (!teamId) return {};
   try {
-    const [hitting, pitching] = await Promise.all([
+    const [hitting, pitching, splits, lastX] = await Promise.all([
       httpsGet(`https://${MLB_BASE}/api/v1/teams/${teamId}/stats?stats=season&group=hitting&season=2026`),
-      httpsGet(`https://${MLB_BASE}/api/v1/teams/${teamId}/stats?stats=season&group=pitching&season=2026`)
+      httpsGet(`https://${MLB_BASE}/api/v1/teams/${teamId}/stats?stats=season&group=pitching&season=2026`),
+      httpsGet(`https://${MLB_BASE}/api/v1/teams/${teamId}/stats?stats=statSplits&sitCodes=h,a&group=hitting&season=2026`).catch(() => ({})),
+      httpsGet(`https://${MLB_BASE}/api/v1/teams/${teamId}/stats?stats=lastXGames&group=hitting&season=2026&limit=14`).catch(() => ({}))
     ]);
     const h = hitting.stats?.[0]?.splits?.[0]?.stat || {};
     const p = pitching.stats?.[0]?.splits?.[0]?.stat || {};
     const gamesPlayed = safeNum(h.gamesPlayed, 1);
+
+    // Parse home/away splits
+    const splitArr = splits.stats?.[0]?.splits || [];
+    const homeSplit = splitArr.find(s => s.split?.code === 'h')?.stat || {};
+    const awaySplit = splitArr.find(s => s.split?.code === 'a')?.stat || {};
+    const homeGP = safeNum(homeSplit.gamesPlayed, 1);
+    const awayGP = safeNum(awaySplit.gamesPlayed, 1);
+
+    // Last 14 days form
+    const recent = lastX.stats?.[0]?.splits?.[0]?.stat || {};
+    const recentGP = safeNum(recent.gamesPlayed, 1);
+
     return {
       runsPerGame: safeNum(h.runs, 0) / gamesPlayed,
       hitsPerGame: safeNum(h.hits, 0) / gamesPlayed,
@@ -291,15 +399,126 @@ async function fetchTeamStats(teamId) {
       obp: safeNum(h.obp, null),
       slg: safeNum(h.slg, null),
       avg: safeNum(h.avg, null),
-      // NOTE: Team pitching ERA includes starters. Relief ERA typically runs
-      // ~0.30 higher than full-staff ERA, so we adjust to avoid double-counting
-      // the starter (whose individual ERA is modeled separately).
+      // Home/away offensive splits
+      homeRPG: safeNum(homeSplit.runs, 0) / homeGP,
+      homeOBP: safeNum(homeSplit.obp, null),
+      homeSLG: safeNum(homeSplit.slg, null),
+      awayRPG: safeNum(awaySplit.runs, 0) / awayGP,
+      awayOBP: safeNum(awaySplit.obp, null),
+      awaySLG: safeNum(awaySplit.slg, null),
+      // Last 14 days
+      recent14RPG: safeNum(recent.runs, 0) / recentGP,
+      recent14OBP: safeNum(recent.obp, null),
+      recent14SLG: safeNum(recent.slg, null),
+      // Bullpen ERA — team pitching ERA + 0.30 (relievers run higher than full staff)
       bullpenERA: (safeNum(p.era, 4.00)) + 0.30,
       bullpenK9: safeNum(p.strikeoutsPer9Inn, 8.5),
       gamesPlayed,
     };
   } catch(e) {
     return {};
+  }
+}
+
+// ─── Lineup Fetcher (today's actual batting order) ────────────────────────────
+async function fetchLineup(gamePk) {
+  if (!gamePk) return { home: [], away: [] };
+  try {
+    const data = await httpsGet(`https://${MLB_BASE}/api/v1/game/${gamePk}/boxscore`);
+    const homeOrder = data.teams?.home?.battingOrder || [];
+    const awayOrder = data.teams?.away?.battingOrder || [];
+    return { home: homeOrder, away: awayOrder };
+  } catch(e) {
+    return { home: [], away: [] };
+  }
+}
+
+async function fetchLineupStats(batterIds, pitcherHand = 'R') {
+  if (!batterIds || batterIds.length === 0) return null;
+  try {
+    // Fetch top 5 hitters' season + platoon split stats in parallel
+    // (top-5 captures most lineup variance; weaker hitters add noise)
+    const top5 = batterIds.slice(0, 5);
+    const sitCode = pitcherHand === 'L' ? 'vl' : 'vr';
+    const results = await Promise.all(top5.map(id =>
+      Promise.all([
+        httpsGet(`https://${MLB_BASE}/api/v1/people/${id}/stats?stats=season&group=hitting&season=2026`).catch(() => ({})),
+        httpsGet(`https://${MLB_BASE}/api/v1/people/${id}/stats?stats=statSplits&sitCodes=${sitCode}&group=hitting&season=2026`).catch(() => ({}))
+      ])
+    ));
+    let totalOBP = 0, totalSLG = 0, count = 0;
+    let platoonOBP = 0, platoonSLG = 0, platoonCount = 0;
+    for (const [season, splits] of results) {
+      const s = season.stats?.[0]?.splits?.[0]?.stat || {};
+      const obp = parseFloat(s.obp);
+      const slg = parseFloat(s.slg);
+      if (!isNaN(obp) && !isNaN(slg)) {
+        totalOBP += obp;
+        totalSLG += slg;
+        count++;
+      }
+      const sp = splits.stats?.[0]?.splits?.[0]?.stat || {};
+      const pObp = parseFloat(sp.obp);
+      const pSlg = parseFloat(sp.slg);
+      if (!isNaN(pObp) && !isNaN(pSlg)) {
+        platoonOBP += pObp;
+        platoonSLG += pSlg;
+        platoonCount++;
+      }
+    }
+    if (count === 0) return null;
+    return {
+      lineupOBP: totalOBP / count,
+      lineupSLG: totalSLG / count,
+      lineupVsPitcherOBP: platoonCount > 0 ? platoonOBP / platoonCount : null,
+      lineupVsPitcherSLG: platoonCount > 0 ? platoonSLG / platoonCount : null,
+      battersFound: count,
+    };
+  } catch(e) {
+    return null;
+  }
+}
+
+// ─── Bullpen Fatigue (innings thrown by relievers in last 2 days) ────────────
+async function fetchBullpenFatigue(teamId, gameDate) {
+  if (!teamId || !gameDate) return { fatigueMultiplier: 1.0, recentBullpenIP: 0 };
+  try {
+    const today = new Date(gameDate);
+    const start = new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const end = new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const sched = await httpsGet(
+      `https://${MLB_BASE}/api/v1/schedule?sportId=1&teamId=${teamId}&startDate=${start}&endDate=${end}&hydrate=probablePitcher`
+    );
+    const games = (sched.dates || []).flatMap(d => d.games || []);
+    let totalReliefIP = 0;
+    let priorGameTime = null;
+    for (const g of games) {
+      if (g.status?.abstractGameState !== 'Final') continue;
+      // Track the most recent prior game time for day-after-night detection
+      if (!priorGameTime || g.gameDate > priorGameTime) priorGameTime = g.gameDate;
+      try {
+        const box = await httpsGet(`https://${MLB_BASE}/api/v1/game/${g.gamePk}/boxscore`);
+        const isHome = box.teams?.home?.team?.id === teamId;
+        const teamBox = isHome ? box.teams.home : box.teams.away;
+        const pitcherIds = teamBox?.pitchers || [];
+        // First pitcher = starter, rest = relievers
+        for (let i = 1; i < pitcherIds.length; i++) {
+          const pid = pitcherIds[i];
+          const pStat = teamBox.players?.[`ID${pid}`]?.stats?.pitching;
+          if (pStat?.inningsPitched) {
+            totalReliefIP += parseFloat(pStat.inningsPitched);
+          }
+        }
+      } catch(e) { /* skip this game's box */ }
+    }
+    // Fatigue scale: <3 IP = fresh, 3-5 IP = mild, 5-8 IP = tired, 8+ IP = exhausted
+    let fatigueMultiplier = 1.0;
+    if (totalReliefIP >= 8) fatigueMultiplier = 1.18;
+    else if (totalReliefIP >= 5) fatigueMultiplier = 1.10;
+    else if (totalReliefIP >= 3) fatigueMultiplier = 1.04;
+    return { fatigueMultiplier, recentBullpenIP: totalReliefIP, priorGameTime };
+  } catch(e) {
+    return { fatigueMultiplier: 1.0, recentBullpenIP: 0, priorGameTime: null };
   }
 }
 
@@ -449,6 +668,7 @@ async function buildGameData(games) {
     const homeTeamId = game.teams?.home?.team?.id;
     const awayTeamId = game.teams?.away?.team?.id;
     const venueId = game.venue?.id;
+    const gameDate = game.gameDate;
 
     // Extract home plate umpire
     const officials = game.officials || [];
@@ -460,23 +680,56 @@ async function buildGameData(games) {
     const homePlateUmp = homePlateUmpObj?.official?.fullName || null;
     const umpFactor = getUmpireFactor(homePlateUmp);
 
-    console.log(`  Fetching stats for ${game.teams?.away?.team?.name} @ ${game.teams?.home?.team?.name}${homePlateUmp ? ` (HP: ${homePlateUmp}, ${umpFactor.toFixed(3)}x)` : ''}...`);
+    console.log(`  Fetching stats for ${game.teams?.away?.team?.name} @ ${game.teams?.home?.team?.name}${homePlateUmp ? ` (HP: ${homePlateUmp})` : ''}...`);
 
-    const [homePitcher, awayPitcher, homeTeam, awayTeam, venue] = await Promise.all([
-      fetchPitcherStats(homePitcherId),
-      fetchPitcherStats(awayPitcherId),
+    // Phase 1 — fetch core data (pitchers, teams, venue, lineup, bullpen fatigue)
+    const [homePitcher, awayPitcher, homeTeam, awayTeam, venue, lineup, homeFatigue, awayFatigue] = await Promise.all([
+      fetchPitcherStats(homePitcherId, gameDate),
+      fetchPitcherStats(awayPitcherId, gameDate),
       fetchTeamStats(homeTeamId),
       fetchTeamStats(awayTeamId),
       fetchVenueInfo(venueId),
+      fetchLineup(game.gamePk),
+      fetchBullpenFatigue(homeTeamId, gameDate),
+      fetchBullpenFatigue(awayTeamId, gameDate),
     ]);
 
-    // Fetch weather separately (don't block game data on failure)
-    const weather = await fetchWeather(venueId, game.gameDate).catch(() => ({ windSpeed: 8, windDir: 'neutral', temp: 72 }));
+    // Phase 2 — fetch lineup stats (depends on lineup IDs and opposing pitcher hand)
+    const [homeLineupStats, awayLineupStats] = await Promise.all([
+      fetchLineupStats(lineup.home, awayPitcher.throws || 'R'),
+      fetchLineupStats(lineup.away, homePitcher.throws || 'R'),
+    ]);
 
-    // ERA priority: recent form (last 7 games) > estimated FIP > season ERA > league avg
-    // FIP strips defense + luck — better predictor than raw ERA
+    // Weather (don't block game data on failure)
+    const weather = await fetchWeather(venueId, gameDate).catch(() => ({ windSpeed: 8, windDir: 'neutral', temp: 72 }));
+
+    // ERA priority: recent form > FIP > season ERA > league avg
     const homeStarterERA = homePitcher.recentERA ?? homePitcher.bestERA ?? homePitcher.era ?? 4.20;
     const awayStarterERA = awayPitcher.recentERA ?? awayPitcher.bestERA ?? awayPitcher.era ?? 4.20;
+
+    // Day game after night game detection
+    const dayAfterNight = (priorGameTime, currentGameTime) => {
+      if (!priorGameTime || !currentGameTime) return false;
+      const prior = new Date(priorGameTime);
+      const current = new Date(currentGameTime);
+      // Less than 18 hours between first pitch of yesterday's game and today's
+      // AND today's game starts before 5 PM ET (14 PM local-ish UTC)
+      const hoursBetween = (current - prior) / (1000 * 60 * 60);
+      const isDayGame = current.getUTCHours() < 21; // before ~5 PM ET
+      return hoursBetween < 18 && hoursBetween > 0 && isDayGame;
+    };
+    const homeDayAfterNight = dayAfterNight(homeFatigue.priorGameTime, gameDate);
+    const awayDayAfterNight = dayAfterNight(awayFatigue.priorGameTime, gameDate);
+
+    // Apply lineup OBP/SLG when available, otherwise fall back to team season avg
+    const homeOBP = homeLineupStats?.lineupOBP ?? homeTeam.obp ?? null;
+    const homeSLG = homeLineupStats?.lineupSLG ?? homeTeam.slg ?? null;
+    const awayOBP = awayLineupStats?.lineupOBP ?? awayTeam.obp ?? null;
+    const awaySLG = awayLineupStats?.lineupSLG ?? awayTeam.slg ?? null;
+
+    // Use home/away splits when home/away splits are available
+    const homeRPGAdjusted = homeTeam.homeRPG > 0 ? homeTeam.homeRPG : (homeTeam.runsPerGame ?? 4.5);
+    const awayRPGAdjusted = awayTeam.awayRPG > 0 ? awayTeam.awayRPG : (awayTeam.runsPerGame ?? 4.5);
 
     results.push({
       gamePk: game.gamePk,
@@ -486,7 +739,7 @@ async function buildGameData(games) {
       awayTeamId,
       venue: game.venue?.name,
       venueId,
-      gameTime: game.gameDate,
+      gameTime: gameDate,
       weather,
       homePlateUmp: homePlateUmp || 'TBD',
       umpFactor,
@@ -500,14 +753,24 @@ async function buildGameData(games) {
         starterWHIP: homePitcher.whip,
         starterBB9: homePitcher.bb9,
         starterThrows: homePitcher.throws || 'R',
+        starterRestDays: homePitcher.restDays,
+        starterAvgPitches: homePitcher.avgPitchCount,
+        starterLastIP: homePitcher.lastStartIP,
         bullpenERA: homeTeam.bullpenERA ?? 4.30,
         bullpenK9: homeTeam.bullpenK9 ?? 8.5,
-        teamRPG: homeTeam.runsPerGame ?? 4.5,
+        bullpenFatigue: homeFatigue.fatigueMultiplier,
+        recentBullpenIP: homeFatigue.recentBullpenIP,
+        teamRPG: homeRPGAdjusted,
         teamHPG: homeTeam.hitsPerGame ?? 8.5,
         teamHRPG: homeTeam.hrPerGame ?? 1.1,
-        teamOBP: homeTeam.obp,
-        teamSLG: homeTeam.slg,
+        teamOBP: homeOBP,
+        teamSLG: homeSLG,
         teamAVG: homeTeam.avg,
+        recent14RPG: homeTeam.recent14RPG,
+        lineupOBP: homeLineupStats?.lineupOBP ?? null,
+        lineupSLG: homeLineupStats?.lineupSLG ?? null,
+        lineupBattersFound: homeLineupStats?.battersFound ?? 0,
+        dayAfterNight: homeDayAfterNight,
         gamesPlayed: homeTeam.gamesPlayed ?? 0,
         parkFactor: venue.parkFactor,
       },
@@ -519,14 +782,24 @@ async function buildGameData(games) {
         starterWHIP: awayPitcher.whip,
         starterBB9: awayPitcher.bb9,
         starterThrows: awayPitcher.throws || 'R',
+        starterRestDays: awayPitcher.restDays,
+        starterAvgPitches: awayPitcher.avgPitchCount,
+        starterLastIP: awayPitcher.lastStartIP,
         bullpenERA: awayTeam.bullpenERA ?? 4.30,
         bullpenK9: awayTeam.bullpenK9 ?? 8.5,
-        teamRPG: awayTeam.runsPerGame ?? 4.5,
+        bullpenFatigue: awayFatigue.fatigueMultiplier,
+        recentBullpenIP: awayFatigue.recentBullpenIP,
+        teamRPG: awayRPGAdjusted,
         teamHPG: awayTeam.hitsPerGame ?? 8.5,
         teamHRPG: awayTeam.hrPerGame ?? 1.1,
-        teamOBP: awayTeam.obp,
-        teamSLG: awayTeam.slg,
+        teamOBP: awayOBP,
+        teamSLG: awaySLG,
         teamAVG: awayTeam.avg,
+        recent14RPG: awayTeam.recent14RPG,
+        lineupOBP: awayLineupStats?.lineupOBP ?? null,
+        lineupSLG: awayLineupStats?.lineupSLG ?? null,
+        lineupBattersFound: awayLineupStats?.battersFound ?? 0,
+        dayAfterNight: awayDayAfterNight,
         gamesPlayed: awayTeam.gamesPlayed ?? 0,
         parkFactor: 1.0,
       },
@@ -597,10 +870,12 @@ function matchOdds(game, oddsData) {
 async function getAIReasoning(games, anthropicKey) {
   const summary = games.map(g => ({
     matchup: `${g.awayTeam} @ ${g.homeTeam}`,
-    homePitcher: `${g.homePitcherName} (ERA: ${g.homeStats.starterERA?.toFixed(2)}, FIP: ${g.homeStats.starterFIP?.toFixed(2) || 'N/A'}, K/9: ${g.homeStats.starterK9?.toFixed(1)}, Throws: ${g.homeStats.starterThrows || 'R'})`,
-    awayPitcher: `${g.awayPitcherName} (ERA: ${g.awayStats.starterERA?.toFixed(2)}, FIP: ${g.awayStats.starterFIP?.toFixed(2) || 'N/A'}, K/9: ${g.awayStats.starterK9?.toFixed(1)}, Throws: ${g.awayStats.starterThrows || 'R'})`,
-    homeTeamStats: `RPG: ${g.homeStats.teamRPG?.toFixed(2)}, OBP: ${g.homeStats.teamOBP || 'N/A'}, SLG: ${g.homeStats.teamSLG || 'N/A'}`,
-    awayTeamStats: `RPG: ${g.awayStats.teamRPG?.toFixed(2)}, OBP: ${g.awayStats.teamOBP || 'N/A'}, SLG: ${g.awayStats.teamSLG || 'N/A'}`,
+    homePitcher: `${g.homePitcherName} (ERA: ${g.homeStats.starterERA?.toFixed(2)}, FIP: ${g.homeStats.starterFIP?.toFixed(2) || 'N/A'}, K/9: ${g.homeStats.starterK9?.toFixed(1)}, BB/9: ${g.homeStats.starterBB9?.toFixed(2) || 'N/A'}, WHIP: ${g.homeStats.starterWHIP?.toFixed(2) || 'N/A'}, Throws: ${g.homeStats.starterThrows || 'R'}, Rest: ${g.homeStats.starterRestDays ?? 'N/A'} days, Avg pitches L3: ${g.homeStats.starterAvgPitches?.toFixed(0) || 'N/A'})`,
+    awayPitcher: `${g.awayPitcherName} (ERA: ${g.awayStats.starterERA?.toFixed(2)}, FIP: ${g.awayStats.starterFIP?.toFixed(2) || 'N/A'}, K/9: ${g.awayStats.starterK9?.toFixed(1)}, BB/9: ${g.awayStats.starterBB9?.toFixed(2) || 'N/A'}, WHIP: ${g.awayStats.starterWHIP?.toFixed(2) || 'N/A'}, Throws: ${g.awayStats.starterThrows || 'R'}, Rest: ${g.awayStats.starterRestDays ?? 'N/A'} days, Avg pitches L3: ${g.awayStats.starterAvgPitches?.toFixed(0) || 'N/A'})`,
+    homeBullpen: `ERA: ${g.homeStats.bullpenERA?.toFixed(2)}, K/9: ${g.homeStats.bullpenK9?.toFixed(1)}, IP last 2 days: ${g.homeStats.recentBullpenIP?.toFixed(1) || '0'} (fatigue mult: ${g.homeStats.bullpenFatigue?.toFixed(2)}x)`,
+    awayBullpen: `ERA: ${g.awayStats.bullpenERA?.toFixed(2)}, K/9: ${g.awayStats.bullpenK9?.toFixed(1)}, IP last 2 days: ${g.awayStats.recentBullpenIP?.toFixed(1) || '0'} (fatigue mult: ${g.awayStats.bullpenFatigue?.toFixed(2)}x)`,
+    homeOffense: `RPG: ${g.homeStats.teamRPG?.toFixed(2)} (last 14d: ${g.homeStats.recent14RPG?.toFixed(2) || 'N/A'}), Lineup OBP/SLG: ${g.homeStats.lineupOBP?.toFixed(3) || 'N/A'}/${g.homeStats.lineupSLG?.toFixed(3) || 'N/A'} (${g.homeStats.lineupBattersFound || 0} of top 5 found)${g.homeStats.dayAfterNight ? ' [day game after night game]' : ''}`,
+    awayOffense: `RPG: ${g.awayStats.teamRPG?.toFixed(2)} (last 14d: ${g.awayStats.recent14RPG?.toFixed(2) || 'N/A'}), Lineup OBP/SLG: ${g.awayStats.lineupOBP?.toFixed(3) || 'N/A'}/${g.awayStats.lineupSLG?.toFixed(3) || 'N/A'} (${g.awayStats.lineupBattersFound || 0} of top 5 found)${g.awayStats.dayAfterNight ? ' [day game after night game]' : ''}`,
     venue: g.venue,
     parkFactor: g.homeStats.parkFactor,
     homePlateUmp: g.homePlateUmp,
@@ -615,11 +890,13 @@ async function getAIReasoning(games, anthropicKey) {
     evAboveThreshold: g.ev >= 4.5,
   }));
 
-  const prompt = `You are an expert MLB betting analyst. Using real MLB Stats API inputs and 10-million-simulation Monte Carlo results with platoon/weather/temperature/umpire adjustments, provide sharp 2-3 sentence reasoning for each game.
+  const prompt = `You are an expert MLB betting analyst. Using real MLB Stats API inputs and 10-million-simulation Monte Carlo results, provide sharp 2-3 sentence reasoning for each game.
 
-Model factors applied: pitcher handedness platoon adjustments (batter advantage vs opposite-hand pitchers), wind speed/direction weather impact, temperature suppression, estimated FIP over raw ERA where available, bullpen ERA modeled separately, home plate umpire run-scoring tendency, minimum +4.5% EV edge filter.
+PITCHING IS THE PRIMARY FACTOR. Lead your reasoning with the starting pitcher matchup. Always reference: starter ERA/FIP/WHIP, K/BB rates, recent rest days, and any pitcher fatigue signals (high recent pitch counts, short rest, heavy bullpen usage). Mention bullpen fatigue when one team has thrown 5+ relief innings in the last 2 days. Cite handedness platoon edges only after pitching is established.
 
-For each game cover: (1) key pitcher matchup including handedness advantage, (2) weather, park, or umpire impact if significant, (3) actionable betting insight referencing sim probability vs Vegas implied odds.
+Model factors applied: starter quality (heavily weighted), bullpen ERA + recent-IP fatigue multiplier, pitcher rest days, recent pitch count workload, today's actual lineup OBP/SLG (top 5 hitters), home/away offensive splits, last-14-days form, day-after-night fatigue, handedness platoon, park factor, weather, home plate umpire run-scoring tendency, minimum +4.5% EV edge filter.
+
+For each game cover: (1) PITCHING — starter vs starter matchup with key rate stats and any fatigue/rest concerns, (2) SECONDARY — bullpen depth/fatigue, lineup quality, weather/park/ump impact if significant, (3) actionable betting insight referencing sim probability vs Vegas implied odds.
 
 GAMES:
 ${JSON.stringify(summary, null, 2)}
@@ -746,10 +1023,16 @@ function buildPicksEmail(analyzed, timeLabel, bankroll = 1000) {
       <div style="font-size:16px;font-weight:700;color:#111827">${g.awayTeam} @ ${g.homeTeam}</div>
       <div style="font-size:12px;color:#6b7280;margin-top:2px">${gameTime} · ${g.venue || ''}</div>
       <div style="font-size:11px;color:#9ca3af;margin-top:2px">
-        ⚾ ${g.awayPitcherName} (${g.awayStats.starterERA?.toFixed(2) || '—'} ERA) vs ${g.homePitcherName} (${g.homeStats.starterERA?.toFixed(2) || '—'} ERA)
+        ⚾ ${g.awayPitcherName} (${g.awayStats.starterERA?.toFixed(2) || '—'} ERA · ${g.awayStats.starterFIP?.toFixed(2) || '—'} FIP · ${g.awayStats.starterWHIP?.toFixed(2) || '—'} WHIP · ${g.awayStats.starterK9?.toFixed(1) || '—'} K9${g.awayStats.starterRestDays !== null ? ` · ${g.awayStats.starterRestDays}d rest` : ''})
       </div>
       <div style="font-size:11px;color:#9ca3af;margin-top:1px">
-        🧑‍⚖️ HP: ${g.homePlateUmp || 'TBD'}${g.umpFactor !== 1.0 ? ` (${g.umpFactor > 1.0 ? '↑' : '↓'} ${g.umpFactor.toFixed(3)}x runs)` : ''}
+        ⚾ ${g.homePitcherName} (${g.homeStats.starterERA?.toFixed(2) || '—'} ERA · ${g.homeStats.starterFIP?.toFixed(2) || '—'} FIP · ${g.homeStats.starterWHIP?.toFixed(2) || '—'} WHIP · ${g.homeStats.starterK9?.toFixed(1) || '—'} K9${g.homeStats.starterRestDays !== null ? ` · ${g.homeStats.starterRestDays}d rest` : ''})
+      </div>
+      <div style="font-size:11px;color:#9ca3af;margin-top:1px">
+        🛟 Bullpens: ${g.awayTeam?.split(' ').pop()} ${g.awayStats.bullpenERA?.toFixed(2)} ERA${g.awayStats.recentBullpenIP > 5 ? ` (⚠️ ${g.awayStats.recentBullpenIP.toFixed(1)} IP last 2d)` : ''} · ${g.homeTeam?.split(' ').pop()} ${g.homeStats.bullpenERA?.toFixed(2)} ERA${g.homeStats.recentBullpenIP > 5 ? ` (⚠️ ${g.homeStats.recentBullpenIP.toFixed(1)} IP last 2d)` : ''}
+      </div>
+      <div style="font-size:11px;color:#9ca3af;margin-top:1px">
+        🧑‍⚖️ HP: ${g.homePlateUmp || 'TBD'}${g.umpFactor !== 1.0 ? ` (${g.umpFactor > 1.0 ? '↑' : '↓'} ${g.umpFactor.toFixed(3)}x runs)` : ''}${g.homeStats.dayAfterNight || g.awayStats.dayAfterNight ? ` · ☀️ Day after night` : ''}
       </div>
     </div>
     <div style="text-align:right">
@@ -827,8 +1110,8 @@ function buildPicksEmail(analyzed, timeLabel, bankroll = 1000) {
       </tr>
     </table>
     <div style="margin-top:10px;font-size:10px;color:#93c5fd">
-      Inputs: Starter ERA ${g.awayStats.starterERA?.toFixed(2) || '—'} / ${g.homeStats.starterERA?.toFixed(2) || '—'} · 
-      Bullpen ERA ${g.awayStats.bullpenERA?.toFixed(2) || '—'} / ${g.homeStats.bullpenERA?.toFixed(2) || '—'} · 
+      Inputs: Starters ${g.awayStats.starterERA?.toFixed(2) || '—'}/${g.homeStats.starterERA?.toFixed(2) || '—'} ERA · Bullpens ${g.awayStats.bullpenERA?.toFixed(2) || '—'}/${g.homeStats.bullpenERA?.toFixed(2) || '—'} (fatigue ${g.awayStats.bullpenFatigue?.toFixed(2) || '1.00'}x/${g.homeStats.bullpenFatigue?.toFixed(2) || '1.00'}x) · 
+      Lineup ${g.awayStats.lineupOBP ? g.awayStats.lineupOBP.toFixed(3) : 'team'}/${g.homeStats.lineupOBP ? g.homeStats.lineupOBP.toFixed(3) : 'team'} OBP · 
       Park ${g.homeStats.parkFactor?.toFixed(2)} · Ump ${g.umpFactor?.toFixed(3) || '1.000'}
     </div>
   </div>
@@ -864,7 +1147,7 @@ function buildPicksEmail(analyzed, timeLabel, bankroll = 1000) {
   ${cards}
 
   <div style="text-align:center;color:#9ca3af;font-size:11px;padding:16px;line-height:1.8">
-    Powered by MLB Stats API · 10M Poisson simulations · Platoon + weather + umpire adjusted · Kelly capped at 25%<br>
+    Powered by MLB Stats API · 10M Poisson sims · Pitching-first model: starter ERA/FIP/WHIP/K9 + rest days + bullpen fatigue + lineup OBP/SLG · Kelly capped at 25%<br>
     For informational use only · Bet responsibly
   </div>
 </div>
