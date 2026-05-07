@@ -1,0 +1,138 @@
+{
+  "date": "2026-05-07",
+  "games": [
+    {
+      "home_team": "Kansas City Royals",
+      "away_team": "Cleveland Guardians",
+      "commence_time": "2:10 PM ET",
+      "pick": "Kansas City Royals",
+      "pick_odds": -144,
+      "ev": 30.828055555555544,
+      "kelly": 25,
+      "sim_home_win_pct": 77.21,
+      "sim_away_win_pct": 13.94,
+      "home_plate_ump": "Nic Lentz",
+      "ump_factor": 0.988
+    },
+    {
+      "home_team": "Chicago Cubs",
+      "away_team": "Cincinnati Reds",
+      "commence_time": "2:20 PM ET",
+      "pick": "Chicago Cubs",
+      "pick_odds": -190,
+      "ev": 16.717368421052605,
+      "kelly": 25,
+      "sim_home_win_pct": 76.47,
+      "sim_away_win_pct": 14.13,
+      "home_plate_ump": "Scott Barry",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "New York Yankees",
+      "away_team": "Texas Rangers",
+      "commence_time": "1:35 PM ET",
+      "pick": "New York Yankees",
+      "pick_odds": -162,
+      "ev": 16.978148148148154,
+      "kelly": 25,
+      "sim_home_win_pct": 72.33,
+      "sim_away_win_pct": 17.4,
+      "home_plate_ump": "Brock Ballou",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Miami Marlins",
+      "away_team": "Baltimore Orioles",
+      "commence_time": "1:40 PM ET",
+      "pick": "Miami Marlins",
+      "pick_odds": -124,
+      "ev": 15.034838709677413,
+      "kelly": 18.64319999999999,
+      "sim_home_win_pct": 63.68,
+      "sim_away_win_pct": 24.03,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Washington Nationals",
+      "away_team": "Minnesota Twins",
+      "commence_time": "1:35 PM ET",
+      "pick": "Washington Nationals",
+      "pick_odds": -120,
+      "ev": 8.038333333333348,
+      "kelly": 9.646000000000015,
+      "sim_home_win_pct": 58.93,
+      "sim_away_win_pct": 30.17,
+      "home_plate_ump": "Nate Tomlinson",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Colorado Rockies",
+      "away_team": "New York Mets",
+      "commence_time": "2026-05-07T19:10:00Z",
+      "pick": "Colorado Rockies",
+      "pick_odds": 130,
+      "ev": 3.1320000000000014,
+      "kelly": 2.4092307692307706,
+      "sim_home_win_pct": 44.84,
+      "sim_away_win_pct": 40.18,
+      "home_plate_ump": "Sean Barber",
+      "ump_factor": 0.979
+    },
+    {
+      "home_team": "Arizona Diamondbacks",
+      "away_team": "Pittsburgh Pirates",
+      "commence_time": "9:40 PM ET",
+      "pick": "Pittsburgh Pirates",
+      "pick_odds": -104,
+      "ev": 6.86461538461538,
+      "kelly": 7.139199999999994,
+      "sim_home_win_pct": 31.69,
+      "sim_away_win_pct": 54.48,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Boston Red Sox",
+      "away_team": "Tampa Bay Rays",
+      "commence_time": "2026-05-07T23:10:00Z",
+      "pick": "Tampa Bay Rays",
+      "pick_odds": -102,
+      "ev": -8.347450980392157,
+      "kelly": 0,
+      "sim_home_win_pct": 36.59,
+      "sim_away_win_pct": 46.28,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Philadelphia Phillies",
+      "away_team": "Athletics",
+      "commence_time": "2026-05-07T22:40:00Z",
+      "pick": "Philadelphia Phillies",
+      "pick_odds": -130,
+      "ev": -17.907692307692315,
+      "kelly": 0,
+      "sim_home_win_pct": 46.4,
+      "sim_away_win_pct": 39.79,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "San Diego Padres",
+      "away_team": "St. Louis Cardinals",
+      "commence_time": "2026-05-08T02:10:00Z",
+      "pick": "San Diego Padres",
+      "pick_odds": -172,
+      "ev": -22.24279069767441,
+      "kelly": 0,
+      "sim_home_win_pct": 49.17,
+      "sim_away_win_pct": 37.48,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    }
+  ],
+  "sent_at": [
+    "2026-05-07T15:25:03.910Z"
+  ]
+}
