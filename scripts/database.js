@@ -2,6 +2,61 @@ const fs = require('fs');
 const path = require('path');
 
 const DB_FILE = path.join(__dirname, '..', 'data', 'season-database.json');
+const BACKUP_DIR = path.join(__dirname, '..', 'data', 'backups');
+const MAX_BACKUPS = 30;  // keep last 30 daily snapshots
+const MAX_HOURLY_BACKUPS = 10;  // keep last 10 hourly emergency backups
+
+// ─── Backup System ────────────────────────────────────────────────────────────
+// Strategy: before every write, snapshot the current DB to data/backups/.
+// Daily snapshots are kept for 30 days. Hourly emergency snapshots keep the
+// last 10. The combination protects against:
+//   1. Accidental deletion / git mishap (daily snapshots)
+//   2. Code bug that corrupts the DB (hourly snapshots — quick rollback window)
+//   3. Mid-write crash (atomic writes via temp file + rename)
+function backupDB() {
+  if (!fs.existsSync(DB_FILE)) return null;
+  try {
+    if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR, { recursive: true });
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    const timeStr = now.toISOString().replace(/[:.]/g, '-').slice(0, 19); // YYYY-MM-DDTHH-MM-SS
+
+    // Daily snapshot (one per day, overwrites earlier same-day writes)
+    const dailyPath = path.join(BACKUP_DIR, `daily-${dateStr}.json`);
+    fs.copyFileSync(DB_FILE, dailyPath);
+
+    // Hourly snapshot (timestamped, every save creates a new one for last-N retention)
+    const hourlyPath = path.join(BACKUP_DIR, `snapshot-${timeStr}.json`);
+    fs.copyFileSync(DB_FILE, hourlyPath);
+
+    // Prune old backups
+    pruneBackups();
+    return { dailyPath, hourlyPath };
+  } catch(e) {
+    console.error('Backup failed (non-fatal):', e.message);
+    return null;
+  }
+}
+
+function pruneBackups() {
+  try {
+    const files = fs.readdirSync(BACKUP_DIR);
+    // Prune daily snapshots — keep last MAX_BACKUPS
+    const dailies = files
+      .filter(f => f.startsWith('daily-') && f.endsWith('.json'))
+      .map(f => ({ name: f, path: path.join(BACKUP_DIR, f) }))
+      .sort((a, b) => b.name.localeCompare(a.name));
+    dailies.slice(MAX_BACKUPS).forEach(f => fs.unlinkSync(f.path));
+    // Prune hourly snapshots — keep last MAX_HOURLY_BACKUPS
+    const snapshots = files
+      .filter(f => f.startsWith('snapshot-') && f.endsWith('.json'))
+      .map(f => ({ name: f, path: path.join(BACKUP_DIR, f) }))
+      .sort((a, b) => b.name.localeCompare(a.name));
+    snapshots.slice(MAX_HOURLY_BACKUPS).forEach(f => fs.unlinkSync(f.path));
+  } catch(e) {
+    console.error('Prune failed (non-fatal):', e.message);
+  }
+}
 
 function loadDB() {
   if (!fs.existsSync(DB_FILE)) {
@@ -17,7 +72,12 @@ function loadDB() {
 }
 
 function saveDB(db) {
-  fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+  // ATOMIC WRITE — write to temp file first, then rename. If we crash mid-write,
+  // the original file stays intact. fs.renameSync is atomic on POSIX systems.
+  backupDB();
+  const tempFile = DB_FILE + '.tmp';
+  fs.writeFileSync(tempFile, JSON.stringify(db, null, 2));
+  fs.renameSync(tempFile, DB_FILE);
 }
 
 // Save predictions for a given date
@@ -26,57 +86,30 @@ function savePredictions(date, predictions) {
   if (!db.games[date]) db.games[date] = [];
 
   for (const p of predictions) {
-    // Support both camelCase (from analyzeGame) and snake_case (normalized)
-    const homeTeam = p.homeTeam || p.home_team;
-    const awayTeam = p.awayTeam || p.away_team;
-
     const existing = db.games[date].find(g =>
-      g.home_team === homeTeam && g.away_team === awayTeam
+      g.home_team === p.home_team && g.away_team === p.away_team
     );
     const entry = {
       date,
-      matchup: `${awayTeam} @ ${homeTeam}`,
-      home_team: homeTeam,
-      away_team: awayTeam,
+      matchup: `${p.away_team} @ ${p.home_team}`,
+      home_team: p.home_team,
+      away_team: p.away_team,
       game_time: p.commence_time || p.gameTime || 'TBD',
       pick: p.pick,
       pick_odds: p.pickOdds,
       ev_pct: parseFloat((p.ev || 0).toFixed(2)),
       kelly_pct: parseFloat((p.kelly || 0).toFixed(2)),
-      confidence_score: p.confidenceScore || null,
-      sim_home_win_pct: p.sim?.homeWinPct ?? null,
-      sim_away_win_pct: p.sim?.awayWinPct ?? null,
-      ci_low: p.sim?.ciLow ?? null,
-      ci_high: p.sim?.ciHigh ?? null,
-      projected_total: p.sim?.projectedTotal ?? null,
-      projected_f5: p.sim?.projectedF5Total ?? null,
-      vegas_ou: p.vegasOULine ?? null,
+      sim_home_win_pct: p.sim?.homeWinPct || null,
+      sim_away_win_pct: p.sim?.awayWinPct || null,
+      ci_low: p.sim?.ciLow || null,
+      ci_high: p.sim?.ciHigh || null,
+      projected_total: p.sim?.projectedTotal || null,
+      projected_f5: p.sim?.projectedF5Total || null,
+      vegas_ou: p.vegasOULine || null,
       home_pitcher: p.homePitcherName || null,
       away_pitcher: p.awayPitcherName || null,
-      home_era: p.homeStats?.starterERA ?? null,
-      away_era: p.awayStats?.starterERA ?? null,
-      home_starter_fip: p.homeStats?.starterFIP ?? null,
-      away_starter_fip: p.awayStats?.starterFIP ?? null,
-      home_starter_whip: p.homeStats?.starterWHIP ?? null,
-      away_starter_whip: p.awayStats?.starterWHIP ?? null,
-      home_starter_k9: p.homeStats?.starterK9 ?? null,
-      away_starter_k9: p.awayStats?.starterK9 ?? null,
-      home_starter_rest: p.homeStats?.starterRestDays ?? null,
-      away_starter_rest: p.awayStats?.starterRestDays ?? null,
-      home_bullpen_era: p.homeStats?.bullpenERA ?? null,
-      away_bullpen_era: p.awayStats?.bullpenERA ?? null,
-      home_bullpen_fatigue: p.homeStats?.bullpenFatigue ?? null,
-      away_bullpen_fatigue: p.awayStats?.bullpenFatigue ?? null,
-      home_recent_bullpen_ip: p.homeStats?.recentBullpenIP ?? null,
-      away_recent_bullpen_ip: p.awayStats?.recentBullpenIP ?? null,
-      home_lineup_obp: p.homeStats?.lineupOBP ?? null,
-      away_lineup_obp: p.awayStats?.lineupOBP ?? null,
-      home_lineup_slg: p.homeStats?.lineupSLG ?? null,
-      away_lineup_slg: p.awayStats?.lineupSLG ?? null,
-      home_day_after_night: p.homeStats?.dayAfterNight ?? false,
-      away_day_after_night: p.awayStats?.dayAfterNight ?? false,
-      home_plate_ump: p.homePlateUmp || null,
-      ump_factor: p.umpFactor ?? null,
+      home_era: p.homeStats?.starterERA || null,
+      away_era: p.awayStats?.starterERA || null,
       result: 'pending',
       home_score: null,
       away_score: null,
@@ -84,13 +117,6 @@ function savePredictions(date, predictions) {
       updated_at: new Date().toISOString(),
     };
     if (existing) {
-      // Preserve result/score if already settled — don't reset W/L back to pending
-      if (existing.result && existing.result !== 'pending') {
-        entry.result = existing.result;
-        entry.home_score = existing.home_score;
-        entry.away_score = existing.away_score;
-        entry.final_result_str = existing.final_result_str;
-      }
       Object.assign(existing, entry);
     } else {
       db.games[date].push(entry);
@@ -132,22 +158,12 @@ function updateResults(date, scores) {
 }
 
 function findScore(game, scores) {
-  // Try two-word match first (e.g. "Red Sox", "Blue Jays") — prevents Sox/Sox confusion
   for (const s of scores) {
-    const homeKey = game.home_team?.split(' ').slice(-2).join(' ').toLowerCase();
-    const awayKey = game.away_team?.split(' ').slice(-2).join(' ').toLowerCase();
-    const sHome = s.home?.toLowerCase() || '';
-    const sAway = s.away?.toLowerCase() || '';
-    if (sHome.includes(homeKey) && sAway.includes(awayKey)) return s;
-    if (homeKey && sHome.includes(homeKey) && awayKey && sAway.includes(awayKey)) return s;
-  }
-  // Fallback: single last word, but require BOTH to match
-  for (const s of scores) {
-    const homeLast = game.home_team?.split(' ').pop()?.toLowerCase();
-    const awayLast = game.away_team?.split(' ').pop()?.toLowerCase();
-    const sHome = s.home?.toLowerCase() || '';
-    const sAway = s.away?.toLowerCase() || '';
-    if (homeLast && awayLast && sHome.includes(homeLast) && sAway.includes(awayLast)) return s;
+    const homeMatch = s.home?.includes(game.home_team?.split(' ').pop()) ||
+                      game.home_team?.includes(s.home?.split(' ').pop());
+    const awayMatch = s.away?.includes(game.away_team?.split(' ').pop()) ||
+                      game.away_team?.includes(s.away?.split(' ').pop());
+    if (homeMatch && awayMatch) return s;
   }
   return null;
 }
