@@ -86,30 +86,52 @@ function savePredictions(date, predictions) {
   if (!db.games[date]) db.games[date] = [];
 
   for (const p of predictions) {
+    // Support both camelCase (from analyzeGame) and snake_case (normalized)
+    const homeTeam = p.homeTeam || p.home_team;
+    const awayTeam = p.awayTeam || p.away_team;
+
     const existing = db.games[date].find(g =>
-      g.home_team === p.home_team && g.away_team === p.away_team
+      g.home_team === homeTeam && g.away_team === awayTeam
     );
     const entry = {
       date,
-      matchup: `${p.away_team} @ ${p.home_team}`,
-      home_team: p.home_team,
-      away_team: p.away_team,
+      matchup: `${awayTeam} @ ${homeTeam}`,
+      home_team: homeTeam,
+      away_team: awayTeam,
       game_time: p.commence_time || p.gameTime || 'TBD',
       pick: p.pick,
       pick_odds: p.pickOdds,
       ev_pct: parseFloat((p.ev || 0).toFixed(2)),
       kelly_pct: parseFloat((p.kelly || 0).toFixed(2)),
-      sim_home_win_pct: p.sim?.homeWinPct || null,
-      sim_away_win_pct: p.sim?.awayWinPct || null,
-      ci_low: p.sim?.ciLow || null,
-      ci_high: p.sim?.ciHigh || null,
-      projected_total: p.sim?.projectedTotal || null,
-      projected_f5: p.sim?.projectedF5Total || null,
-      vegas_ou: p.vegasOULine || null,
+      confidence_score: p.confidenceScore || null,
+      sim_home_win_pct: p.sim?.homeWinPct ?? null,
+      sim_away_win_pct: p.sim?.awayWinPct ?? null,
+      ci_low: p.sim?.ciLow ?? null,
+      ci_high: p.sim?.ciHigh ?? null,
+      projected_total: p.sim?.projectedTotal ?? null,
+      projected_f5: p.sim?.projectedF5Total ?? null,
+      vegas_ou: p.vegasOULine ?? null,
       home_pitcher: p.homePitcherName || null,
       away_pitcher: p.awayPitcherName || null,
-      home_era: p.homeStats?.starterERA || null,
-      away_era: p.awayStats?.starterERA || null,
+      home_era: p.homeStats?.starterERA ?? null,
+      away_era: p.awayStats?.starterERA ?? null,
+      home_plate_ump: p.homePlateUmp || null,
+      ump_factor: p.umpFactor ?? null,
+      // Player prop edges — track each +EV prop for backtesting
+      prop_edges: (p.propEdges || []).map(edge => ({
+        type: edge.type,
+        pick: edge.pick,
+        player: edge.player,
+        line: edge.line,
+        side: edge.side,
+        odds: edge.odds,
+        sim_prob: edge.simProb,
+        implied_prob: edge.impliedProb,
+        ev: edge.ev,
+        kelly: edge.kelly,
+        bookmaker: edge.bookmaker,
+        result: 'pending',  // will be settled by morning summary
+      })),
       result: 'pending',
       home_score: null,
       away_score: null,
@@ -117,6 +139,25 @@ function savePredictions(date, predictions) {
       updated_at: new Date().toISOString(),
     };
     if (existing) {
+      // Preserve settled main result + settled props
+      if (existing.result && existing.result !== 'pending') {
+        entry.result = existing.result;
+        entry.home_score = existing.home_score;
+        entry.away_score = existing.away_score;
+        entry.final_result_str = existing.final_result_str;
+      }
+      // Merge prop results: keep settled, update pending
+      if (existing.prop_edges && entry.prop_edges) {
+        for (const newProp of entry.prop_edges) {
+          const oldProp = existing.prop_edges.find(op =>
+            op.pick === newProp.pick && op.line === newProp.line && op.side === newProp.side
+          );
+          if (oldProp && oldProp.result && oldProp.result !== 'pending') {
+            newProp.result = oldProp.result;
+            newProp.actual = oldProp.actual;
+          }
+        }
+      }
       Object.assign(existing, entry);
     } else {
       db.games[date].push(entry);
