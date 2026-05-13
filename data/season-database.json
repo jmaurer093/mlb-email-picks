@@ -5,15 +5,15 @@
     "start_date": "2026-03-30"
   },
   "season_stats": {
-    "wins": 183,
-    "losses": 154,
+    "wins": 191,
+    "losses": 161,
     "pushes": 5,
     "pending": 0,
-    "profit": -1759.96,
-    "total_wagered": 41349.5,
-    "roi": -4.26,
+    "profit": -1712.24,
+    "total_wagered": 43078.9,
+    "roi": -3.97,
     "win_pct": 54.3,
-    "record": "183-154-5"
+    "record": "191-161-5"
   },
   "games": {
     "2026-04-16": [
@@ -13673,11 +13673,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "TBD",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.684Z"
+        "result": "W",
+        "home_score": 3,
+        "away_score": 1,
+        "final_result_str": "Colorado Rockies 1, Pittsburgh Pirates 3",
+        "updated_at": "2026-05-13T13:16:39.183Z"
       },
       {
         "date": "2026-05-12",
@@ -13723,11 +13723,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "TBD",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.684Z"
+        "result": "L",
+        "home_score": 2,
+        "away_score": 6,
+        "final_result_str": "San Francisco Giants 6, Los Angeles Dodgers 2",
+        "updated_at": "2026-05-13T13:16:39.183Z"
       },
       {
         "date": "2026-05-12",
@@ -13773,11 +13773,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "TBD",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.684Z"
+        "result": "W",
+        "home_score": 2,
+        "away_score": 10,
+        "final_result_str": "Seattle Mariners 10, Houston Astros 2",
+        "updated_at": "2026-05-13T13:16:39.183Z"
       },
       {
         "date": "2026-05-12",
@@ -13823,11 +13823,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "TBD",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.684Z"
+        "result": "W",
+        "home_score": 10,
+        "away_score": 2,
+        "final_result_str": "Detroit Tigers 2, New York Mets 10",
+        "updated_at": "2026-05-13T13:16:39.183Z"
       },
       {
         "date": "2026-05-12",
@@ -13873,11 +13873,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "TBD",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.685Z"
+        "result": "L",
+        "home_score": 6,
+        "away_score": 4,
+        "final_result_str": "San Diego Padres 4, Milwaukee Brewers 6",
+        "updated_at": "2026-05-13T13:16:39.183Z"
       },
       {
         "date": "2026-05-12",
@@ -13923,11 +13923,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "Jeremie Rehak",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.684Z"
+        "result": "L",
+        "home_score": 3,
+        "away_score": 2,
+        "final_result_str": "Los Angeles Angels 2, Cleveland Guardians 3",
+        "updated_at": "2026-05-13T13:16:39.183Z"
       },
       {
         "date": "2026-05-12",
@@ -13973,11 +13973,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "TBD",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.684Z"
+        "result": "L",
+        "home_score": 7,
+        "away_score": 4,
+        "final_result_str": "Arizona Diamondbacks 4, Texas Rangers 7",
+        "updated_at": "2026-05-13T13:16:39.183Z"
       },
       {
         "date": "2026-05-12",
@@ -14023,11 +14023,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "TBD",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.684Z"
+        "result": "W",
+        "home_score": 3,
+        "away_score": 0,
+        "final_result_str": "Miami Marlins 0, Minnesota Twins 3",
+        "updated_at": "2026-05-13T13:16:39.183Z"
       },
       {
         "date": "2026-05-12",
@@ -14073,11 +14073,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "TBD",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.685Z"
+        "result": "W",
+        "home_score": 6,
+        "away_score": 7,
+        "final_result_str": "Tampa Bay Rays 7, Toronto Blue Jays 6",
+        "updated_at": "2026-05-13T13:16:39.183Z"
       },
       {
         "date": "2026-05-12",
@@ -14123,11 +14123,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "TBD",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.685Z"
+        "result": "L",
+        "home_score": 5,
+        "away_score": 2,
+        "final_result_str": "Chicago Cubs 2, Atlanta Braves 5",
+        "updated_at": "2026-05-13T13:16:39.183Z"
       },
       {
         "date": "2026-05-12",
@@ -14173,11 +14173,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "TBD",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.685Z"
+        "result": "W",
+        "home_score": 6,
+        "away_score": 5,
+        "final_result_str": "Kansas City Royals 5, Chicago White Sox 6",
+        "updated_at": "2026-05-13T13:16:39.184Z"
       },
       {
         "date": "2026-05-12",
@@ -14223,11 +14223,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "TBD",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.684Z"
+        "result": "W",
+        "home_score": 2,
+        "away_score": 6,
+        "final_result_str": "New York Yankees 6, Baltimore Orioles 2",
+        "updated_at": "2026-05-13T13:16:39.184Z"
       },
       {
         "date": "2026-05-12",
@@ -14273,11 +14273,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "TBD",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.685Z"
+        "result": "W",
+        "home_score": 1,
+        "away_score": 2,
+        "final_result_str": "Philadelphia Phillies 2, Boston Red Sox 1",
+        "updated_at": "2026-05-13T13:16:39.184Z"
       },
       {
         "date": "2026-05-12",
@@ -14323,11 +14323,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "TBD",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.685Z"
+        "result": "L",
+        "home_score": 4,
+        "away_score": 6,
+        "final_result_str": "St. Louis Cardinals 6, Athletics 4",
+        "updated_at": "2026-05-13T13:16:39.184Z"
       },
       {
         "date": "2026-05-12",
@@ -14373,11 +14373,11 @@
         "away_day_after_night": false,
         "home_plate_ump": "TBD",
         "ump_factor": 1,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-12T18:03:52.685Z"
+        "result": "L",
+        "home_score": 4,
+        "away_score": 10,
+        "final_result_str": "Washington Nationals 10, Cincinnati Reds 4",
+        "updated_at": "2026-05-13T13:16:39.184Z"
       }
     ]
   }
