@@ -15130,31 +15130,6 @@
         "away_score": null,
         "final_result_str": null,
         "updated_at": "2026-05-13T18:06:23.992Z"
-      },
-      {
-        "date": "2026-05-13",
-        "matchup": "undefined @ undefined",
-        "game_time": "9:40 PM ET",
-        "pick": "Athletics",
-        "pick_odds": -152,
-        "ev_pct": -15.66,
-        "kelly_pct": 0,
-        "sim_home_win_pct": 50.87,
-        "sim_away_win_pct": 38.61,
-        "ci_low": 50.8,
-        "ci_high": 50.9,
-        "projected_total": 8.96,
-        "projected_f5": 4.93,
-        "vegas_ou": 10,
-        "home_pitcher": "J.T. Ginn",
-        "away_pitcher": "Matthew Liberatore",
-        "home_era": 3.69,
-        "away_era": 4.38,
-        "result": "pending",
-        "home_score": null,
-        "away_score": null,
-        "final_result_str": null,
-        "updated_at": "2026-05-13T19:21:51.910Z"
       }
     ]
   }
