@@ -2,6 +2,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const db = require('./database');
+const { simulatePitcherKs, simulateBatterHits } = require('./player-props');
 
 // ─── HTTP Helpers ─────────────────────────────────────────────────────────────
 function httpsGet(url) {
@@ -519,6 +520,41 @@ async function fetchTeamStats(teamId) {
     return {};
   }
 }
+
+// ─── Batter Stat Fetcher (for prop simulation — by player ID) ────────────────
+// Caches by ID so repeat lookups within a single run don't re-hit the API.
+const __batterStatCache = {};
+async function fetchBatterStats(batterId) {
+  if (!batterId) return null;
+  if (__batterStatCache[batterId]) return __batterStatCache[batterId];
+  try {
+    const [season, info] = await Promise.all([
+      httpsGet(`https://${MLB_BASE}/api/v1/people/${batterId}/stats?stats=season&group=hitting&season=2026`).catch(() => ({})),
+      httpsGet(`https://${MLB_BASE}/api/v1/people/${batterId}`).catch(() => ({}))
+    ]);
+    const s = season.stats?.[0]?.splits?.[0]?.stat || {};
+    const stats = {
+      name: info.people?.[0]?.fullName || null,
+      avg: parseFloat(s.avg) || null,
+      obp: parseFloat(s.obp) || null,
+      slg: parseFloat(s.slg) || null,
+      ops: parseFloat(s.ops) || null,
+      ab: parseInt(s.atBats) || 0,
+      bats: info.people?.[0]?.batSide?.code || 'R',
+    };
+    __batterStatCache[batterId] = stats;
+    return stats;
+  } catch(e) {
+    return null;
+  }
+}
+
+// Fuzzy name match — props come back with names like "Aaron Judge" but our
+// lineup gives us IDs. We resolve via the team roster for matching.
+function normalizeName(n) {
+  return (n || '').toLowerCase().replace(/[^a-z\s]/g, '').trim();
+}
+
 
 // ─── Lineup Fetcher (today's actual batting order) ────────────────────────────
 async function fetchLineup(gamePk) {
@@ -1137,6 +1173,7 @@ async function buildGameData(games) {
       umpFactor,
       homePitcherName: game.teams?.home?.probablePitcher?.fullName || 'TBD',
       awayPitcherName: game.teams?.away?.probablePitcher?.fullName || 'TBD',
+      lineupIds: { home: lineup.home, away: lineup.away },
       homeStats: {
         starterERA: homeStarterERA,
         starterSeasonERA: homePitcher.era,
@@ -1251,6 +1288,106 @@ async function fetchOdds(oddsKey) {
     console.log('Odds API failed:', e.message);
     return [];
   }
+}
+
+// ─── Player Prop Odds (Vegas lines for pitcher Ks + batter hits) ──────────────
+// The Odds API splits props onto per-event endpoints. We list MLB events,
+// match them to our games, then fetch player props per event.
+// Markets used:
+//   - pitcher_strikeouts  (over/under at lines like 5.5, 6.5)
+//   - batter_hits         (over/under usually 0.5, 1.5)
+// Each event request costs ~10 API credits — budget accordingly.
+async function fetchEventList(oddsKey) {
+  if (!oddsKey) return [];
+  try {
+    const data = await httpsGet(
+      `https://api.the-odds-api.com/v4/sports/baseball_mlb/events?apiKey=${oddsKey}&dateFormat=iso`
+    );
+    return Array.isArray(data) ? data : [];
+  } catch(e) {
+    console.log('Events fetch failed:', e.message);
+    return [];
+  }
+}
+
+async function fetchEventProps(oddsKey, eventId) {
+  if (!oddsKey || !eventId) return null;
+  try {
+    const data = await httpsGet(
+      `https://api.the-odds-api.com/v4/sports/baseball_mlb/events/${eventId}/odds?apiKey=${oddsKey}&regions=us&markets=pitcher_strikeouts,batter_hits&oddsFormat=american&dateFormat=iso`
+    );
+    return data;
+  } catch(e) {
+    console.log(`  Props for ${eventId} unavailable:`, e.message);
+    return null;
+  }
+}
+
+// Match an event from the events list to a game by team names (Sox-safe)
+function matchEvent(game, events) {
+  for (const e of events) {
+    const homeKey = game.homeTeam?.split(' ').slice(-2).join(' ').toLowerCase();
+    const awayKey = game.awayTeam?.split(' ').slice(-2).join(' ').toLowerCase();
+    const eHome = e.home_team?.toLowerCase() || '';
+    const eAway = e.away_team?.toLowerCase() || '';
+    if (eHome.includes(homeKey) && eAway.includes(awayKey)) return e;
+  }
+  for (const e of events) {
+    const homeLast = game.homeTeam?.split(' ').pop()?.toLowerCase();
+    const awayLast = game.awayTeam?.split(' ').pop()?.toLowerCase();
+    const eHome = e.home_team?.toLowerCase() || '';
+    const eAway = e.away_team?.toLowerCase() || '';
+    if (homeLast && awayLast && eHome.includes(homeLast) && eAway.includes(awayLast)) return e;
+  }
+  return null;
+}
+
+// Extract pitcher K + batter hits prop lines from one event's payload
+// Returns: { pitcherKs: [{name, line, overOdds, underOdds, bookmaker}], batterHits: [...] }
+function extractProps(eventData) {
+  const result = { pitcherKs: [], batterHits: [] };
+  if (!eventData?.bookmakers) return result;
+
+  // Prefer FanDuel, then DraftKings, then first available
+  const bm = eventData.bookmakers.find(b => b.key === 'fanduel') ||
+             eventData.bookmakers.find(b => b.key === 'draftkings') ||
+             eventData.bookmakers[0];
+  if (!bm) return result;
+
+  const bookName = bm.title || 'Unknown';
+
+  // Pitcher Ks — outcomes come as {name: "Over"/"Under", description: "Pitcher Name", point: line, price: odds}
+  const ks = bm.markets?.find(m => m.key === 'pitcher_strikeouts');
+  if (ks?.outcomes) {
+    // Group outcomes by pitcher name
+    const byPitcher = {};
+    for (const o of ks.outcomes) {
+      const name = o.description || o.participant || 'Unknown';
+      if (!byPitcher[name]) byPitcher[name] = { name, line: o.point, overOdds: null, underOdds: null, bookmaker: bookName };
+      if (o.name === 'Over') byPitcher[name].overOdds = o.price;
+      else if (o.name === 'Under') byPitcher[name].underOdds = o.price;
+      byPitcher[name].line = o.point ?? byPitcher[name].line;
+    }
+    result.pitcherKs = Object.values(byPitcher).filter(p => p.overOdds || p.underOdds);
+  }
+
+  // Batter hits
+  const hits = bm.markets?.find(m => m.key === 'batter_hits');
+  if (hits?.outcomes) {
+    const byBatter = {};
+    for (const o of hits.outcomes) {
+      const name = o.description || o.participant || 'Unknown';
+      // Many batter-hits markets only post O 0.5 line — we still track separately
+      const key = `${name}|${o.point}`;
+      if (!byBatter[key]) byBatter[key] = { name, line: o.point, overOdds: null, underOdds: null, bookmaker: bookName };
+      if (o.name === 'Over') byBatter[key].overOdds = o.price;
+      else if (o.name === 'Under') byBatter[key].underOdds = o.price;
+      byBatter[key].line = o.point ?? byBatter[key].line;
+    }
+    result.batterHits = Object.values(byBatter).filter(b => b.overOdds || b.underOdds);
+  }
+
+  return result;
 }
 
 function matchOdds(game, oddsData) {
@@ -1380,6 +1517,158 @@ function calcConfidenceScore(sim, ourProb, impliedP, gamesPlayed) {
   return Math.min(99, Math.round(convictionGap * 1.5 + ciScore + sampleScore + agreementScore));
 }
 
+// ─── Prop Edge Calculator ────────────────────────────────────────────────────
+// For each Vegas prop line, run a focused simulation, compare model probability
+// to Vegas implied probability, compute EV + Kelly. Returns ranked edges.
+function buildPropEdges(game) {
+  const edges = [];
+  if (!game.props) return edges;
+
+  // Identify which side each pitcher is on (we know names from MLB API)
+  const pitchers = [
+    { name: game.homePitcherName, throws: game.homeStats.starterThrows,
+      starterERA: game.homeStats.starterERA, starterFIP: game.homeStats.starterFIP,
+      starterK9: game.homeStats.starterK9, starterBB9: game.homeStats.starterBB9,
+      side: 'home', opp: game.awayStats },
+    { name: game.awayPitcherName, throws: game.awayStats.starterThrows,
+      starterERA: game.awayStats.starterERA, starterFIP: game.awayStats.starterFIP,
+      starterK9: game.awayStats.starterK9, starterBB9: game.awayStats.starterBB9,
+      side: 'away', opp: game.homeStats },
+  ];
+
+  // ── Pitcher Strikeouts ──
+  for (const propLine of game.props.pitcherKs || []) {
+    // Match prop's pitcher name to our two starters
+    const propName = normalizeName(propLine.name);
+    const match = pitchers.find(p => normalizeName(p.name).includes(propName) || propName.includes(normalizeName(p.name)));
+    if (!match) continue;
+
+    const sim = simulatePitcherKs(match, match.opp, { N: 200000, lines: [propLine.line] });
+    const overP = sim.p_over[propLine.line] / 100;
+    const underP = 1 - overP;
+
+    // Compute EV for both sides
+    if (propLine.overOdds) {
+      const impliedOver = impliedProb(propLine.overOdds);
+      const evOver = (overP * dec(propLine.overOdds) - 1) * 100;
+      const kOver = Math.max(0, Math.min(10, ((overP * dec(propLine.overOdds) - 1) / (dec(propLine.overOdds) - 1)) * 100));
+      if (evOver > 3) {
+        edges.push({
+          type: 'pitcher_ks',
+          pick: `${match.name} OVER ${propLine.line} K`,
+          player: match.name,
+          line: propLine.line,
+          side: 'over',
+          odds: propLine.overOdds,
+          simProb: +(overP * 100).toFixed(1),
+          impliedProb: +(impliedOver * 100).toFixed(1),
+          ev: +evOver.toFixed(2),
+          kelly: +kOver.toFixed(2),
+          simMean: sim.mean,
+          bookmaker: propLine.bookmaker,
+        });
+      }
+    }
+    if (propLine.underOdds) {
+      const impliedUnder = impliedProb(propLine.underOdds);
+      const evUnder = (underP * dec(propLine.underOdds) - 1) * 100;
+      const kUnder = Math.max(0, Math.min(10, ((underP * dec(propLine.underOdds) - 1) / (dec(propLine.underOdds) - 1)) * 100));
+      if (evUnder > 3) {
+        edges.push({
+          type: 'pitcher_ks',
+          pick: `${match.name} UNDER ${propLine.line} K`,
+          player: match.name,
+          line: propLine.line,
+          side: 'under',
+          odds: propLine.underOdds,
+          simProb: +(underP * 100).toFixed(1),
+          impliedProb: +(impliedUnder * 100).toFixed(1),
+          ev: +evUnder.toFixed(2),
+          kelly: +kUnder.toFixed(2),
+          simMean: sim.mean,
+          bookmaker: propLine.bookmaker,
+        });
+      }
+    }
+  }
+
+  // ── Batter Hits ──
+  // Match each prop by name against batter stats stored in game.batterStats
+  const batterStats = game.batterStats || {};
+  for (const propLine of game.props.batterHits || []) {
+    const propName = normalizeName(propLine.name);
+    let match = null;
+    for (const [id, stat] of Object.entries(batterStats)) {
+      if (!stat?.name) continue;
+      const sn = normalizeName(stat.name);
+      if (sn.includes(propName) || propName.includes(sn)) {
+        match = stat;
+        break;
+      }
+    }
+    if (!match) continue;
+
+    // Decide which pitcher this batter faces (opposing starter)
+    // Heuristic: batter belongs to whichever team has this batter in their lineup
+    const homeIds = (game.lineupIds?.home || []).map(String);
+    const awayIds = (game.lineupIds?.away || []).map(String);
+    const matchedId = Object.entries(batterStats).find(([id, s]) => s === match)?.[0];
+    const isHomeBatter = homeIds.includes(matchedId);
+    const facingPitcher = isHomeBatter ? pitchers.find(p => p.side === 'away') : pitchers.find(p => p.side === 'home');
+    if (!facingPitcher) continue;
+
+    const sim = simulateBatterHits(match, facingPitcher, { N: 50000, lines: [propLine.line] });
+    const overP = sim.p_over[propLine.line] / 100;
+    const underP = 1 - overP;
+
+    if (propLine.overOdds) {
+      const impliedOver = impliedProb(propLine.overOdds);
+      const evOver = (overP * dec(propLine.overOdds) - 1) * 100;
+      const kOver = Math.max(0, Math.min(10, ((overP * dec(propLine.overOdds) - 1) / (dec(propLine.overOdds) - 1)) * 100));
+      if (evOver > 3) {
+        edges.push({
+          type: 'batter_hits',
+          pick: `${match.name} OVER ${propLine.line} H`,
+          player: match.name,
+          line: propLine.line,
+          side: 'over',
+          odds: propLine.overOdds,
+          simProb: +(overP * 100).toFixed(1),
+          impliedProb: +(impliedOver * 100).toFixed(1),
+          ev: +evOver.toFixed(2),
+          kelly: +kOver.toFixed(2),
+          simMean: sim.mean,
+          bookmaker: propLine.bookmaker,
+        });
+      }
+    }
+    if (propLine.underOdds) {
+      const impliedUnder = impliedProb(propLine.underOdds);
+      const evUnder = (underP * dec(propLine.underOdds) - 1) * 100;
+      const kUnder = Math.max(0, Math.min(10, ((underP * dec(propLine.underOdds) - 1) / (dec(propLine.underOdds) - 1)) * 100));
+      if (evUnder > 3) {
+        edges.push({
+          type: 'batter_hits',
+          pick: `${match.name} UNDER ${propLine.line} H`,
+          player: match.name,
+          line: propLine.line,
+          side: 'under',
+          odds: propLine.underOdds,
+          simProb: +(underP * 100).toFixed(1),
+          impliedProb: +(impliedUnder * 100).toFixed(1),
+          ev: +evUnder.toFixed(2),
+          kelly: +kUnder.toFixed(2),
+          simMean: sim.mean,
+          bookmaker: propLine.bookmaker,
+        });
+      }
+    }
+  }
+
+  // Rank by EV descending, cap at 5 per game to avoid clutter
+  return edges.sort((a, b) => b.ev - a.ev).slice(0, 5);
+}
+
 function analyzeGame(game, opts = {}) {
   const sim = runMonteCarlo(game.homeStats, game.awayStats, game.weather, game.umpFactor || 1.0, opts);
 
@@ -1432,6 +1721,10 @@ function analyzeGame(game, opts = {}) {
     }
   }
 
+  // ─── PROP EDGES ─────────────────────────────────────────────────────────
+  // Simulate every Vegas prop line on this game, return ranked +EV plays
+  const propEdges = buildPropEdges(game);
+
   return {
     ...game, sim,
     // Primary
@@ -1440,6 +1733,8 @@ function analyzeGame(game, opts = {}) {
     fadeName, fadeOdds, fadeSide, fadeProb, fadeImplied, fadeEV, fadeKelly,
     // O/U + ranking
     ouPick, ouEdge, confidenceScore,
+    // Player props
+    propEdges,
   };
 }
 
@@ -1624,8 +1919,70 @@ function buildPicksEmail(analyzed, timeLabel, bankroll = 1000) {
 
   ${cards}
 
+  ${(() => {
+    // ─── PLAYER PROPS SECTION ──────────────────────────────────────────────
+    // Aggregate all prop edges across every game, sort by EV, show top 10
+    const allProps = analyzed.flatMap(g =>
+      (g.propEdges || []).map(p => ({ ...p, matchup: `${g.awayTeam} @ ${g.homeTeam}` }))
+    ).sort((a, b) => b.ev - a.ev).slice(0, 10);
+
+    if (allProps.length === 0) {
+      return `<div style="background:#f9fafb;border-radius:12px;padding:20px;text-align:center;color:#9ca3af;font-size:13px;margin-bottom:20px">
+        🎯 No +EV player props detected today (Vegas lines tight or none available)
+      </div>`;
+    }
+
+    const propRows = allProps.map((p, i) => {
+      const typeIcon = p.type === 'pitcher_ks' ? '⚾' : '🥎';
+      const typeLabel = p.type === 'pitcher_ks' ? 'PITCHER K' : 'BATTER HITS';
+      const evColor = p.ev > 7 ? '#16a34a' : p.ev > 4 ? '#65a30d' : '#ca8a04';
+      const isBest = i === 0;
+      return `
+      <tr style="background:${isBest ? '#f0fdf4' : (i % 2 ? '#fafafa' : '#fff')};border-bottom:1px solid #e5e7eb">
+        <td style="padding:10px 8px;font-size:11px;color:#6b7280">${typeIcon}<br><span style="font-size:9px;letter-spacing:0.5px">${typeLabel}</span></td>
+        <td style="padding:10px 8px">
+          <div style="font-weight:700;font-size:13px;color:#111827">${p.pick}</div>
+          <div style="font-size:11px;color:#6b7280">${p.matchup} · ${p.bookmaker}</div>
+        </td>
+        <td style="padding:10px 8px;text-align:center;font-size:12px">
+          <div style="font-weight:700;color:#1d4ed8">${fmtOdds(p.odds)}</div>
+          <div style="font-size:10px;color:#9ca3af">Vegas</div>
+        </td>
+        <td style="padding:10px 8px;text-align:center;font-size:12px">
+          <div style="font-weight:700">${p.simProb}%</div>
+          <div style="font-size:10px;color:#9ca3af">vs ${p.impliedProb}%</div>
+        </td>
+        <td style="padding:10px 8px;text-align:center;font-size:13px;font-weight:800;color:${evColor}">
+          +${p.ev}%
+          <div style="font-size:10px;color:#9ca3af;font-weight:600">${p.kelly}% bnk</div>
+        </td>
+      </tr>`;
+    }).join('');
+
+    return `
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:0;margin-bottom:20px;overflow:hidden">
+      <div style="background:linear-gradient(135deg,#1e40af,#3730a3);color:#fff;padding:16px 20px">
+        <div style="font-size:18px;font-weight:800;letter-spacing:0.5px">🎯 PLAYER PROP EDGES</div>
+        <div style="font-size:11px;color:#bfdbfe;margin-top:4px">Top ${allProps.length} +EV props · Pitcher K + Batter Hits · Sim probabilities from MLB Stats API + Vegas lines</div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead>
+          <tr style="background:#f3f4f6;border-bottom:2px solid #d1d5db">
+            <th style="padding:8px;text-align:left;font-size:10px;color:#6b7280;letter-spacing:0.5px;text-transform:uppercase">Type</th>
+            <th style="padding:8px;text-align:left;font-size:10px;color:#6b7280;letter-spacing:0.5px;text-transform:uppercase">Pick</th>
+            <th style="padding:8px;text-align:center;font-size:10px;color:#6b7280;letter-spacing:0.5px;text-transform:uppercase">Odds</th>
+            <th style="padding:8px;text-align:center;font-size:10px;color:#6b7280;letter-spacing:0.5px;text-transform:uppercase">Sim/Vegas</th>
+            <th style="padding:8px;text-align:center;font-size:10px;color:#6b7280;letter-spacing:0.5px;text-transform:uppercase">EV / Kelly</th>
+          </tr>
+        </thead>
+        <tbody>${propRows}</tbody>
+      </table>
+    </div>`;
+  })()}
+
   <div style="text-align:center;color:#9ca3af;font-size:11px;padding:16px;line-height:1.8">
     Powered by MLB Stats API · 10M Poisson sims · Pitching-first model: starter ERA/FIP/WHIP/K9 + rest days + bullpen fatigue + lineup OBP/SLG · Kelly capped at 25%<br>
+    Props: 200k sims per pitcher line, 50k sims per batter line · The Odds API for Vegas prop lines<br>
     For informational use only · Bet responsibly
   </div>
 </div>
@@ -1673,21 +2030,51 @@ async function main() {
   const schedule = await fetchMLBSchedule();
   console.log(`${schedule.length} games on schedule`);
 
-  // 2. Fetch odds
+  // 2. Fetch odds (moneyline + totals)
   const oddsData = await fetchOdds(ODDS_API_KEY);
   console.log(`Odds API: ${oddsData.length} games`);
+
+  // 2b. Fetch event list (needed for per-event prop endpoints)
+  const events = await fetchEventList(ODDS_API_KEY);
+  console.log(`Events API: ${events.length} events`);
 
   // 3. Build game data with real pitcher + team stats
   console.log('Fetching pitcher & team stats from MLB Stats API...');
   const games = await buildGameData(schedule);
 
-  // 4. Attach odds to each game
+  // 4. Attach moneyline odds, totals, AND player props to each game
   for (const g of games) {
     const odds = matchOdds(g, oddsData);
     g.homeOdds = odds.homeOdds;
     g.awayOdds = odds.awayOdds;
     g.vegasOULine = odds.ouLine;
     g.bookmaker = odds.bookmaker;
+
+    // Match this game to an event ID and fetch player props
+    const event = matchEvent(g, events);
+    if (event?.id) {
+      const propData = await fetchEventProps(ODDS_API_KEY, event.id);
+      const props = extractProps(propData);
+      g.props = props;
+      console.log(`  Props for ${g.awayTeam} @ ${g.homeTeam}: ${props.pitcherKs.length} K-lines, ${props.batterHits.length} hit-lines`);
+
+      // For batter prop simulation, we need individual batter stats keyed by ID.
+      // Pull stats for everyone in the lineup who has a batter prop offered.
+      const allBatterIds = [
+        ...(g.lineupIds?.home || []),
+        ...(g.lineupIds?.away || []),
+      ];
+      const batterStats = {};
+      // Only fetch when batter props exist (avoid wasted API calls)
+      if (props.batterHits.length > 0 && allBatterIds.length > 0) {
+        const results = await Promise.all(allBatterIds.map(id => fetchBatterStats(id)));
+        allBatterIds.forEach((id, idx) => { if (results[idx]) batterStats[id] = results[idx]; });
+      }
+      g.batterStats = batterStats;
+    } else {
+      g.props = { pitcherKs: [], batterHits: [] };
+      g.batterStats = {};
+    }
   }
 
   // 5. Run Monte Carlo simulations
