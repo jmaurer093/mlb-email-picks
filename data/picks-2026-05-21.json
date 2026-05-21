@@ -1,0 +1,99 @@
+{
+  "date": "2026-05-21",
+  "games": [
+    {
+      "home_team": "Miami Marlins",
+      "away_team": "Atlanta Braves",
+      "commence_time": "1:10 PM ET",
+      "pick": "Atlanta Braves",
+      "pick_odds": -136,
+      "ev": 33.42676470588237,
+      "kelly": 25,
+      "sim_home_win_pct": 15.5,
+      "sim_away_win_pct": 76.89,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Arizona Diamondbacks",
+      "away_team": "Colorado Rockies",
+      "commence_time": "3:40 PM ET",
+      "pick": "Arizona Diamondbacks",
+      "pick_odds": -210,
+      "ev": -10.040952380952383,
+      "kelly": 0,
+      "sim_home_win_pct": 60.94,
+      "sim_away_win_pct": 29.29,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Washington Nationals",
+      "away_team": "New York Mets",
+      "commence_time": "1:35 PM ET",
+      "pick": "Washington Nationals",
+      "pick_odds": -104,
+      "ev": 1.0192307692307834,
+      "kelly": 1.0600000000000145,
+      "sim_home_win_pct": 51.5,
+      "sim_away_win_pct": 39.25,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Los Angeles Angels",
+      "away_team": "Athletics",
+      "commence_time": "4:07 PM ET",
+      "pick": "Athletics",
+      "pick_odds": -108,
+      "ev": -6.188148148148132,
+      "kelly": 0,
+      "sim_home_win_pct": 39.52,
+      "sim_away_win_pct": 48.71,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "St. Louis Cardinals",
+      "away_team": "Pittsburgh Pirates",
+      "commence_time": "2:15 PM ET",
+      "pick": "Pittsburgh Pirates",
+      "pick_odds": -122,
+      "ev": -18.879016393442626,
+      "kelly": 0,
+      "sim_home_win_pct": 42.23,
+      "sim_away_win_pct": 44.58,
+      "home_plate_ump": "James Hoye",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Detroit Tigers",
+      "away_team": "Cleveland Guardians",
+      "commence_time": "1:10 PM ET",
+      "pick": "Detroit Tigers",
+      "pick_odds": -120,
+      "ev": -12.531666666666652,
+      "kelly": 0,
+      "sim_home_win_pct": 47.71,
+      "sim_away_win_pct": 39.52,
+      "home_plate_ump": "Manny Gonzalez",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "New York Yankees",
+      "away_team": "Toronto Blue Jays",
+      "commence_time": "1:35 PM ET",
+      "pick": "New York Yankees",
+      "pick_odds": -148,
+      "ev": -22.34918918918919,
+      "kelly": 0,
+      "sim_home_win_pct": 46.34,
+      "sim_away_win_pct": 43.64,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    }
+  ],
+  "sent_at": [
+    "2026-05-21T15:04:13.110Z"
+  ]
+}
