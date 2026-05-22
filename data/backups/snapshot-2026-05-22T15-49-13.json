@@ -5,15 +5,15 @@
     "start_date": "2026-03-30"
   },
   "season_stats": {
-    "wins": 224,
-    "losses": 195,
+    "wins": 220,
+    "losses": 192,
     "pushes": 5,
     "pending": 1,
-    "profit": -1062.49,
-    "total_wagered": 47144.2,
-    "roi": -2.25,
-    "win_pct": 53.5,
-    "record": "224-195-5"
+    "profit": -1235.72,
+    "total_wagered": 46883.6,
+    "roi": -2.64,
+    "win_pct": 53.4,
+    "record": "220-192-5"
   },
   "games": {
     "2026-04-16": [
@@ -17929,11 +17929,11 @@
             "result": "pending"
           }
         ],
-        "result": "W",
-        "home_score": 3,
-        "away_score": 9,
-        "final_result_str": "Atlanta Braves 9, Miami Marlins 3",
-        "updated_at": "2026-05-22T15:49:13.544Z"
+        "result": "pending",
+        "home_score": null,
+        "away_score": null,
+        "final_result_str": null,
+        "updated_at": "2026-05-21T15:04:13.115Z"
       },
       {
         "date": "2026-05-21",
@@ -17975,11 +17975,11 @@
             "result": "pending"
           }
         ],
-        "result": "W",
-        "home_score": 2,
-        "away_score": 1,
-        "final_result_str": "Colorado Rockies 1, Arizona Diamondbacks 2",
-        "updated_at": "2026-05-22T15:49:13.544Z"
+        "result": "pending",
+        "home_score": null,
+        "away_score": null,
+        "final_result_str": null,
+        "updated_at": "2026-05-21T15:04:13.115Z"
       },
       {
         "date": "2026-05-21",
@@ -18035,11 +18035,11 @@
             "result": "pending"
           }
         ],
-        "result": "L",
-        "home_score": 1,
-        "away_score": 2,
-        "final_result_str": "New York Mets 2, Washington Nationals 1",
-        "updated_at": "2026-05-22T15:49:13.544Z"
+        "result": "pending",
+        "home_score": null,
+        "away_score": null,
+        "final_result_str": null,
+        "updated_at": "2026-05-21T15:04:13.115Z"
       },
       {
         "date": "2026-05-21",
@@ -18081,11 +18081,11 @@
             "result": "pending"
           }
         ],
-        "result": "W",
-        "home_score": 2,
-        "away_score": 3,
-        "final_result_str": "Athletics 3, Los Angeles Angels 2",
-        "updated_at": "2026-05-22T15:49:13.544Z"
+        "result": "pending",
+        "home_score": null,
+        "away_score": null,
+        "final_result_str": null,
+        "updated_at": "2026-05-21T15:04:13.115Z"
       },
       {
         "date": "2026-05-21",
@@ -18141,11 +18141,11 @@
             "result": "pending"
           }
         ],
-        "result": "W",
-        "home_score": 2,
-        "away_score": 6,
-        "final_result_str": "Pittsburgh Pirates 6, St. Louis Cardinals 2",
-        "updated_at": "2026-05-22T15:49:13.544Z"
+        "result": "pending",
+        "home_score": null,
+        "away_score": null,
+        "final_result_str": null,
+        "updated_at": "2026-05-21T15:04:13.115Z"
       },
       {
         "date": "2026-05-21",
@@ -18187,11 +18187,11 @@
             "result": "pending"
           }
         ],
-        "result": "L",
-        "home_score": 1,
-        "away_score": 3,
-        "final_result_str": "Cleveland Guardians 3, Detroit Tigers 1",
-        "updated_at": "2026-05-22T15:49:13.544Z"
+        "result": "pending",
+        "home_score": null,
+        "away_score": null,
+        "final_result_str": null,
+        "updated_at": "2026-05-21T15:04:13.115Z"
       },
       {
         "date": "2026-05-21",
@@ -18218,11 +18218,11 @@
         "home_plate_ump": "TBD",
         "ump_factor": 1,
         "prop_edges": [],
-        "result": "L",
-        "home_score": 0,
-        "away_score": 2,
-        "final_result_str": "Toronto Blue Jays 2, New York Yankees 0",
-        "updated_at": "2026-05-22T15:49:13.544Z"
+        "result": "pending",
+        "home_score": null,
+        "away_score": null,
+        "final_result_str": null,
+        "updated_at": "2026-05-21T15:04:13.115Z"
       }
     ]
   }
