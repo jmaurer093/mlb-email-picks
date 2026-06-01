@@ -1,0 +1,125 @@
+{
+  "date": "2026-06-01",
+  "games": [
+    {
+      "home_team": "Cincinnati Reds",
+      "away_team": "Kansas City Royals",
+      "commence_time": "2026-06-01T23:10:00Z",
+      "pick": "Kansas City Royals",
+      "pick_odds": 116,
+      "ev": 70.7048,
+      "kelly": 25,
+      "sim_home_win_pct": 14.59,
+      "sim_away_win_pct": 79.03,
+      "home_plate_ump": "Willie Traynor",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Los Angeles Angels",
+      "away_team": "Colorado Rockies",
+      "commence_time": "2026-06-02T01:38:00Z",
+      "pick": "Los Angeles Angels",
+      "pick_odds": -200,
+      "ev": 10.909999999999997,
+      "kelly": 21.819999999999993,
+      "sim_home_win_pct": 73.94,
+      "sim_away_win_pct": 19.66,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Milwaukee Brewers",
+      "away_team": "San Francisco Giants",
+      "commence_time": "2026-06-01T23:40:00Z",
+      "pick": "Milwaukee Brewers",
+      "pick_odds": -146,
+      "ev": 23,
+      "kelly": 25,
+      "sim_home_win_pct": 73,
+      "sim_away_win_pct": 17.08,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Washington Nationals",
+      "away_team": "Miami Marlins",
+      "commence_time": "2026-06-01T22:45:00Z",
+      "pick": "Washington Nationals",
+      "pick_odds": -142,
+      "ev": 18.597042253521145,
+      "kelly": 25,
+      "sim_home_win_pct": 69.59,
+      "sim_away_win_pct": 22.33,
+      "home_plate_ump": "Jim Wolf",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "St. Louis Cardinals",
+      "away_team": "Texas Rangers",
+      "commence_time": "2026-06-01T23:45:00Z",
+      "pick": "St. Louis Cardinals",
+      "pick_odds": 106,
+      "ev": -4.436600000000002,
+      "kelly": 0,
+      "sim_home_win_pct": 46.39,
+      "sim_away_win_pct": 41.2,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Seattle Mariners",
+      "away_team": "New York Mets",
+      "commence_time": "2026-06-02T01:40:00Z",
+      "pick": "New York Mets",
+      "pick_odds": 110,
+      "ev": 2.8790000000000093,
+      "kelly": 2.6172727272727356,
+      "sim_home_win_pct": 35.29,
+      "sim_away_win_pct": 48.99,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Minnesota Twins",
+      "away_team": "Chicago White Sox",
+      "commence_time": "2026-06-01T23:40:00Z",
+      "pick": "Minnesota Twins",
+      "pick_odds": -158,
+      "ev": -13.374050632911395,
+      "kelly": 0,
+      "sim_home_win_pct": 53.05,
+      "sim_away_win_pct": 35.29,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Arizona Diamondbacks",
+      "away_team": "Los Angeles Dodgers",
+      "commence_time": "2026-06-02T01:40:00Z",
+      "pick": "Los Angeles Dodgers",
+      "pick_odds": -162,
+      "ev": -27.54567901234568,
+      "kelly": 0,
+      "sim_home_win_pct": 43.71,
+      "sim_away_win_pct": 44.8,
+      "home_plate_ump": "TBD",
+      "ump_factor": 1
+    },
+    {
+      "home_team": "Tampa Bay Rays",
+      "away_team": "Detroit Tigers",
+      "commence_time": "2026-06-01T22:40:00Z",
+      "pick": "Tampa Bay Rays",
+      "pick_odds": -158,
+      "ev": -18.485063291139237,
+      "kelly": 0,
+      "sim_home_win_pct": 49.92,
+      "sim_away_win_pct": 35.59,
+      "home_plate_ump": "Dan Bellino",
+      "ump_factor": 1
+    }
+  ],
+  "sent_at": [
+    "2026-06-01T19:09:51.331Z"
+  ]
+}
